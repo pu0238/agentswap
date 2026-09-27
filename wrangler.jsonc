@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "agentswap",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./public" },
+  "observability": { "enabled": true },
+  "vars": {
+    // Solana address that receives the x402 swap fee (USDC). Replace before deploying.
+    "PAY_TO": "REPLACE_WITH_YOUR_SOLANA_ADDRESS",
+    // CAIP-2: mainnet = solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp, devnet = solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1
+    "X402_NETWORK": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+    "FACILITATOR_URL": "https://facilitator.payai.network",
+    "SWAP_PRICE": "$0.01",
+    "JUP_API_BASE": "https://lite-api.jup.ag/swap/v1"
+  }
+  // Optional secret: `wrangler secret put JUP_API_KEY` (use with JUP_API_BASE=https://api.jup.ag/swap/v1)
+}

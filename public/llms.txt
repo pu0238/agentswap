@@ -1,0 +1,12 @@
+# AgentSwap
+
+> Token swaps for AI agents on Solana. Get a free quote, pay $0.01 USDC per swap with x402, receive an unsigned transaction, then sign and send it yourself. Non-custodial and routed through Jupiter.
+
+## API
+- GET /api/tokens: supported tokens `[{symbol, mint, decimals}]`
+- GET /api/quote?from=USDC&to=SOL&amount=1&slippageBps=50: free live quote, amounts in human units
+- POST /api/swap: x402 paid ($0.01 USDC, Solana mainnet). Body `{from, to, amount, userPublicKey, slippageBps?}` returns `{swapTransaction (base64 unsigned VersionedTransaction), lastValidBlockHeight, quote}`
+- POST /mcp: MCP (streamable HTTP) with tools list_tokens, get_quote, swap_info
+
+## Docs
+- [skill.md](/skill.md): full agent instructions with a TypeScript example

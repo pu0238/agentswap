@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentSwap</title>
+<meta name="description" content="Token swaps for AI agents on Solana. Pay per call with x402, get an unsigned transaction, sign it yourself.">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<style>
+  :root {
+    --bg: #0b0d10; --panel: #12161b; --line: #222a33; --text: #e6edf3; --muted: #8b98a5;
+    --accent: #14f195; --accent2: #9945ff; --code: #0e1216;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
+  .logo { font-weight: 700; letter-spacing: -.02em; font-size: 18px; }
+  .logo span { background: linear-gradient(90deg, var(--accent2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  nav a { color: var(--muted); margin-left: 18px; font-size: 14px; }
+  .hero { padding: 64px 0 40px; }
+  .pill { display: inline-block; font-size: 12px; color: var(--accent); border: 1px solid #14f19544; border-radius: 99px; padding: 3px 10px; margin-bottom: 18px; }
+  h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.05; letter-spacing: -.03em; margin: 0 0 18px; }
+  .lead { color: var(--muted); font-size: 19px; max-width: 640px; margin: 0 0 28px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 15px; }
+  .btn.primary { background: var(--accent); color: #04130c; }
+  .btn.ghost { border: 1px solid var(--line); color: var(--text); }
+  .btn:hover { text-decoration: none; filter: brightness(1.1); }
+  section { padding: 40px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 24px; letter-spacing: -.02em; margin: 0 0 20px; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .card .n { font: 600 12px ui-monospace, monospace; color: var(--accent); }
+  .card h3 { margin: 6px 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; margin: 0 0 14px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .c { color: #6b7785; } .k { color: var(--accent); } .s { color: #ffb86c; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  td code { color: var(--accent); }
+  .muted { color: var(--muted); }
+  #live { min-height: 1.6em; }
+  footer { padding: 32px 0 48px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+  @media (max-width: 560px) { nav a:not(:last-child) { display: none; } .hero { padding-top: 32px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Agent<span>Swap</span></div>
+    <nav><a href="#how">How it works</a><a href="#api">API</a><a href="/skill.md">skill.md</a><a href="/llms.txt">llms.txt</a></nav>
+  </header>
+
+  <div class="hero">
+    <div class="pill">Solana · x402 · Jupiter-routed</div>
+    <h1>Your agent has USDC.<br>The site wants something else.</h1>
+    <p class="lead">AgentSwap lets AI agents swap any listed Solana token in one HTTP call. Pay $0.01 per swap through x402 and get back an unsigned transaction. The agent signs it, so we never hold keys or funds.</p>
+    <div class="cta">
+      <a class="btn primary" href="/skill.md">Give it to your agent</a>
+      <a class="btn ghost" href="#api">API reference</a>
+    </div>
+    <p id="live" class="muted" style="margin-top:22px;font-size:14px"></p>
+  </div>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="card"><div class="n">01 · free</div><h3>Quote</h3><p><code>GET /api/quote</code> returns a live price from Jupiter, which searches every major Solana DEX.</p></div>
+      <div class="card"><div class="n">02 · $0.01 via x402</div><h3>Pay &amp; build</h3><p><code>POST /api/swap</code> replies with 402. The agent's x402 client pays in USDC and retries, then gets an unsigned transaction.</p></div>
+      <div class="card"><div class="n">03 · non-custodial</div><h3>Sign &amp; send</h3><p>The agent signs the transaction with its own key and sends it to any RPC. The tokens go straight to its wallet.</p></div>
+    </div>
+  </section>
+
+  <section id="api">
+    <h2>API</h2>
+    <table>
+      <tr><th>Endpoint</th><th>Price</th><th>What it does</th></tr>
+      <tr><td><code>GET /api/tokens</code></td><td>free</td><td>Supported tokens (symbol, mint, decimals)</td></tr>
+      <tr><td><code>GET /api/quote?from=USDC&amp;to=SOL&amp;amount=1</code></td><td>free</td><td>Live quote. Amounts are in human units.</td></tr>
+      <tr><td><code>POST /api/swap</code></td><td>$0.01 USDC · x402</td><td>Returns an unsigned <code>VersionedTransaction</code> (base64) for <code>userPublicKey</code></td></tr>
+      <tr><td><code>POST /mcp</code></td><td>free</td><td>MCP server with <code>list_tokens</code>, <code>get_quote</code> and <code>swap_info</code></td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Try it</h2>
+    <pre><span class="c"># 1. quote (free)</span>
+curl "<span class="s origin">https://agentswap.example</span>/api/quote?from=USDC&amp;to=SOL&amp;amount=1"
+
+<span class="c"># 2. swap (x402 paid). Without payment you get HTTP 402 plus a PAYMENT-REQUIRED header</span>
+curl -X POST <span class="s origin">https://agentswap.example</span>/api/swap \
+  -H 'content-type: application/json' \
+  -d '{"from":"USDC","to":"SOL","amount":"1","userPublicKey":"&lt;wallet&gt;"}'</pre>
+    <pre><span class="c">// TypeScript agent with @x402/fetch + @solana/kit</span>
+<span class="k">const</span> paidFetch = wrapFetchWithPayment(fetch,
+  <span class="k">new</span> x402Client().register(<span class="s">"solana:*"</span>, <span class="k">new</span> ExactSvmScheme(signer)));
+<span class="k">const</span> { swapTransaction } = <span class="k">await</span> paidFetch(<span class="s">`${API}/api/swap`</span>, { method: <span class="s">"POST"</span>, body }).then(r =&gt; r.json());
+<span class="c">// decode → signTransaction([signer.keyPair], tx) → rpc.sendTransaction(...)</span></pre>
+    <p class="muted">Add it to Claude Code as an MCP server:</p>
+    <pre>claude mcp add --transport http agentswap <span class="s origin">https://agentswap.example</span>/mcp</pre>
+  </section>
+
+  <footer>
+    AgentSwap is a hackathon proof of concept. Swaps are routed through <a href="https://jup.ag">Jupiter</a> on Solana mainnet. It is non-custodial: you sign every transaction yourself. Use small amounts.
+  </footer>
+</div>
+<script>
+  const origin = location.origin;
+  document.querySelectorAll(".origin").forEach((el) => (el.textContent = origin));
+  fetch("/api/quote?from=USDC&to=SOL&amount=1")
+    .then((r) => r.json())
+    .then((q) => {
+      if (q.outAmount) document.getElementById("live").textContent =
+        `Live: 1 USDC → ${Number(q.outAmount).toFixed(6)} SOL via ${q.route.join(" → ")}`;
+    })
+    .catch(() => {});
+</script>
+</body>
+</html>
