@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentSwap demo storyboard v2</title>
+<style>
+  @font-face { font-family: Archivo; font-weight: 100 900; font-stretch: 62% 125%; src: url(fonts/archivo-latin-wdth-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 500; src: url(fonts/geist-mono-500.woff2) format("woff2"); }
+  :root { --navy:#012136; --deep:#000E18; --cream:#F1EDE6; --muted:#8FA3B2; --g:#14F195; --page:#00111C; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--page); color: var(--cream); font-family: Archivo, system-ui, sans-serif; padding: 40px 32px 80px; }
+  header { max-width: 1680px; margin: 0 auto 28px; display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; border-bottom: 2px solid var(--cream); padding-bottom: 20px; }
+  header h1 { font-weight: 900; font-stretch: 125%; font-size: 40px; letter-spacing: -0.04em; text-transform: uppercase; line-height: .9; }
+  header p { color: var(--muted); font-size: 16px; margin-top: 10px; max-width: 820px; line-height: 1.45; }
+  .tag { font: 500 12px "Geist Mono", monospace; text-transform: uppercase; border: 2px solid var(--cream); padding: 8px 12px; white-space: nowrap; }
+  .act { max-width: 1680px; margin: 34px auto 14px; font: 500 12px "Geist Mono", monospace; text-transform: uppercase; color: var(--muted); }
+  .grid { max-width: 1680px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 22px; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+  .f { aspect-ratio: 16/9; container-type: inline-size; background: var(--navy); border: 2px solid var(--cream); position: relative; overflow: hidden; }
+  .pad { position: absolute; inset: 4.4cqw; }
+  .lbl { font: 500 .95cqw/1.3 "Geist Mono", monospace; text-transform: uppercase; }
+  .tagw { position: absolute; top: 3.4cqw; left: 4.4cqw; font: 500 1.05cqw/1 "Geist Mono", monospace; text-transform: uppercase; border: .16cqw solid var(--cream); padding: .7cqw 1cqw; }
+  .tagw.ok { background: var(--g); color: var(--navy); }
+  .num { position: absolute; top: 3.4cqw; right: 4.4cqw; font: 500 1.05cqw/1 "Geist Mono", monospace; }
+  .disp { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: .86; text-transform: uppercase; }
+  .m { color: var(--muted); }
+  .deep { background: var(--deep); }
+  .box { border: .16cqw solid var(--cream); }
+  .holo { background: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); color: var(--navy); }
+  .holo-text { background: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .green { background: var(--g); color: var(--navy); }
+  .term { font: 500 1.3cqw/1.6 "Geist Mono", monospace; white-space: pre; padding: 1.8cqw 2cqw; }
+  .strike { text-decoration: line-through; text-decoration-color: var(--g); text-decoration-thickness: .4cqw; color: var(--muted); }
+  .shot { position: absolute; border: .16cqw solid var(--cream); background-size: cover; background-position: top center; }
+  .ph { position: absolute; border: .16cqw dashed var(--muted); display: grid; place-items: center; text-align: center; color: var(--muted); font: 500 1.1cqw/1.5 "Geist Mono", monospace; text-transform: uppercase; background: var(--deep); }
+  .hl { position: absolute; border: .35cqw solid var(--g); }
+  .prog { position: absolute; left: 4.4cqw; right: 4.4cqw; bottom: 19%; height: .5cqw; background: var(--deep); }
+  .prog i { display: block; height: 100%; }
+  .capzone { position: absolute; left: 0; right: 0; bottom: 0; height: 17%; border-top: 1px dashed #8FA3B266; }
+  .capzone span { position: absolute; right: 1.2cqw; bottom: 1cqw; font: 500 .8cqw "Geist Mono", monospace; color: #8FA3B2aa; }
+  .cal { position: absolute; }
+
+  .meta { display: flex; justify-content: space-between; margin-top: 10px; font: 500 11px "Geist Mono", monospace; text-transform: uppercase; color: var(--muted); }
+  .meta b { color: var(--cream); font-weight: 500; }
+  .note { font-size: 14px; line-height: 1.45; color: #C9D3DA; margin-top: 6px; }
+  .note strong { color: var(--cream); }
+  .seam { display: inline-block; margin-top: 8px; font: 500 10.5px "Geist Mono", monospace; text-transform: uppercase; border: 2px solid var(--cream); padding: 3px 8px; }
+  .pending { color: #ffc58f; border-color: #ffc58f; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9bd2"/><stop offset=".3" stop-color="#c7a8ff"/><stop offset=".5" stop-color="#8fd3ff"/><stop offset=".7" stop-color="#8dffd6"/><stop offset="1" stop-color="#f4ff9a"/></linearGradient>
+    <symbol id="caltrop" viewBox="0 0 100 100"><g stroke="url(#hg)" stroke-width="15" stroke-linecap="round"><path d="M50 55L50 8"/><path d="M50 55L12 84"/><path d="M50 55L88 84"/><path d="M50 55L62 70"/></g></symbol>
+  </defs>
+</svg>
+<header>
+  <div>
+    <h1>AgentSwap · demo storyboard <span class="m">v2.1</span></h1>
+    <p>This video tells hackathon judges and AI-agent devs that AgentSwap lets any AI agent swap Solana tokens in one x402-paid HTTP call, without touching its keys. It uses the approved navy system: square 2px frames, Archivo Expanded, holo on deep panels, and the 3D caltrop (drawn here as a flat stand-in).</p>
+  </div>
+  <span class="tag">1920×1080 · ~130s · 13 beats · EN VO</span>
+</header>
+
+<div class="act">Act 1 · the problem</div>
+<div class="grid">
+  <section>
+    <div class="f" id="frame-01">
+      <div class="tagw">agent wallet · USDC</div><div class="num">01 / 13</div>
+      <div class="pad" style="right:40%;display:flex;flex-direction:column;justify-content:center;gap:1cqw">
+        <div class="disp" style="font-size:6.6cqw">Your agent<br>has USDC.</div>
+        <div class="disp m" style="font-size:6.6cqw">The site wants</div>
+        <div class="disp" style="font-size:9.5cqw"><span class="deep" style="padding:0 .6cqw"><span class="holo-text">BONK.</span></span></div>
+      </div>
+      <div class="deep box" style="position:absolute;right:4.4cqw;top:12%;width:33%;bottom:24%"><svg class="cal" style="inset:15%;width:70%;height:70%"><use href="#caltrop"/></svg><span class="lbl m" style="position:absolute;left:1cqw;bottom:1cqw">3D caltrop</span></div>
+      <div class="prog"><i class="holo" style="width:8%"></i></div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>01 · wrong token</b><span>frame-01 · 0–10s</span></div>
+    <p class="note"><strong>The holo word cycles SOL → BONK → JUP → WIF</strong> in its deep block, one swap per VO cue. The caltrop tumbles, and on "fixes that" an AGENTSWAP bar slams in from the left.</p>
+    <span class="seam">→ crossfade</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-02">
+      <div class="tagw">agent wallet · USDC</div><div class="num">02 / 13</div>
+      <div class="pad" style="top:9cqw;display:grid;grid-template-columns:1fr 1fr;gap:0" >
+        <div class="box" style="padding:2cqw;display:flex;flex-direction:column;gap:1.2cqw;border-right:none">
+          <div class="lbl">A human would</div>
+          <div class="disp strike" style="font-size:3.6cqw">Open a DEX</div>
+          <div class="disp strike" style="font-size:3.6cqw">Connect wallet</div>
+          <div class="disp strike" style="font-size:3.6cqw">Click swap</div>
+        </div>
+        <div class="box deep" style="padding:2cqw;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="lbl">x402 made agents customers</div>
+          <div class="disp" style="font-size:5.4cqw">An agent<br>can't <span class="holo-text">click.</span></div>
+        </div>
+      </div>
+      <div class="prog"><i class="holo" style="width:17%"></i></div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>02 · agents can't click</b><span>frame-02 · 10–25s</span></div>
+    <p class="note"><strong>The three human steps land one per cue in the left frame</strong>, then a green strike runs through each. The right deep panel answers "an agent can't click".</p>
+    <span class="seam">→ zoom-through (section)</span>
+  </section>
+</div>
+
+<div class="act">Act 2 · the product</div>
+<div class="grid">
+  <section>
+    <div class="f" id="frame-03">
+      <div class="shot" style="left:4.4cqw;right:4.4cqw;top:8%;bottom:22%;background-image:url(capture/screenshots/full-page.png)"></div>
+      <div class="hl" style="left:7%;top:20%;width:46%;height:30%"></div>
+      <div class="green lbl" style="position:absolute;left:4.4cqw;bottom:19%;padding:.8cqw 1.2cqw">Meet AgentSwap</div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>03 · meet agentswap</b><span>frame-03 · 25–37s</span></div>
+    <p class="note"><strong>The real navy landing rises in</strong> and the green outline steps from the H1 to the live-quote bar. It is a real capture, not a redraw.</p>
+    <span class="seam">→ crossfade</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-04">
+      <div class="num">04 / 13</div>
+      <div class="pad" style="top:8cqw;display:flex;flex-direction:column;gap:1.4cqw">
+        <div class="disp" style="font-size:4.4cqw">One swap, four messages.</div>
+        <div class="box" style="font:500 1.15cqw/1.3 'Geist Mono',monospace">
+          <div class="deep" style="display:grid;grid-template-columns:4cqw 1fr 1fr 12cqw;padding:.8cqw 1cqw">#<span>request</span><span>response</span><span>cost</span></div>
+          <div style="display:grid;grid-template-columns:4cqw 1fr 1fr 12cqw;padding:1cqw;border-top:.16cqw solid var(--cream)"><b>1</b><span>GET /api/quote</span><span>200 · amount + route</span><span>free</span></div>
+          <div style="display:grid;grid-template-columns:4cqw 1fr 1fr 12cqw;border-top:.16cqw solid var(--cream)"><b style="padding:1cqw">2</b><span style="padding:1cqw 0">POST /api/swap</span><span style="padding:1cqw 0">402 · $0.01 USDC</span><span class="holo" style="padding:1cqw">price tag</span></div>
+          <div style="display:grid;grid-template-columns:4cqw 1fr 1fr 12cqw;padding:1cqw;border-top:.16cqw solid var(--cream)"><b>3</b><span>+ x402 payment</span><span>200 · unsigned tx</span><span><span class="green" style="padding:0 .5cqw">$0.01</span></span></div>
+          <div style="display:grid;grid-template-columns:4cqw 1fr 1fr 12cqw;padding:1cqw;border-top:.16cqw solid var(--cream)"><b>4</b><span>sign → send</span><span>tokens in wallet</span><span>SOL fee</span></div>
+        </div>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>04 · four messages</b><span>frame-04 · 37–57s</span></div>
+    <p class="note"><strong>The rows light up one per VO cue</strong>, with row 2 flashing holo as "402" is spoken. The table copy is the landing's own.</p>
+    <span class="seam">→ push-slide left</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-05">
+      <div class="num">05 / 13</div>
+      <div class="pad" style="top:8cqw;display:grid;grid-template-columns:1fr 1fr">
+        <div class="box" style="padding:2.2cqw;display:flex;flex-direction:column;justify-content:space-between;border-right:none">
+          <span class="lbl">AgentSwap does</span>
+          <div class="disp" style="font-size:4.4cqw">Finds the route.<br>Builds the tx.</div>
+          <span class="lbl m">Raydium CLMM · Whirlpool · GoonFi V2</span>
+        </div>
+        <div class="box deep" style="padding:2.2cqw;display:flex;flex-direction:column;justify-content:space-between">
+          <span class="lbl">Your agent does</span>
+          <div class="disp" style="font-size:4.4cqw">Holds the key.<br><span class="holo-text">Signs it.</span></div>
+          <span class="lbl m">0 keys shared · 0 funds held</span>
+        </div>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>05 · never your keys</b><span>frame-05 · 57–72s</span></div>
+    <p class="note"><strong>An "UNSIGNED TX" block slides left → right</strong> across the divide. Route names come from our real quotes.</p>
+    <span class="seam">→ zoom-through (section)</span>
+  </section>
+</div>
+
+<div class="act">Act 3 · live demo</div>
+<div class="grid">
+  <section>
+    <div class="f" id="frame-06">
+      <div class="tagw">agent wallet · USDC</div><div class="num">06 / 13</div>
+      <div class="pad box deep" style="top:9cqw;bottom:22%;padding:0">
+        <div class="lbl" style="padding:1cqw 2cqw;border-bottom:.16cqw solid var(--cream)">terminal · pnpm demo</div>
+        <div class="term"><span class="m">$</span> pnpm demo USDC SOL 1
+▸ Quote 1 USDC → SOL
+  "outAmount": "<span style="color:var(--g)">0.008235526</span>",
+  "minOutAmount": "0.008194349",
+  "route": [ "GoonFi V2" ]</div>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>06 · demo: quote</b><span>frame-06 · 72–86s</span></div>
+    <p class="note"><strong>The command types live, then the real JSON streams in</strong> (from terminal-demo-dryrun.txt).</p>
+    <span class="seam">→ crossfade</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-07">
+      <div class="tagw">agent wallet · USDC</div><div class="num">07 / 13</div>
+      <div class="pad" style="top:9cqw;bottom:22%;display:grid;grid-template-columns:auto 1fr;gap:0">
+        <div class="box deep" style="padding:2cqw;display:flex;flex-direction:column;justify-content:space-between;border-right:none">
+          <span class="lbl">POST /api/swap</span>
+          <span class="disp holo-text" style="font-size:12cqw">402</span>
+          <span class="lbl">payment required</span>
+        </div>
+        <div class="box" style="font:500 1.3cqw/2 'Geist Mono',monospace;padding:1.6cqw 2cqw">scheme&#160;&#160; exact<br>network&#160; solana mainnet<br>amount&#160;&#160; 10000 <span class="green" style="padding:0 .5cqw">= $0.01 USDC</span><br>asset&#160;&#160;&#160; EPjFWdd5…Dt1v<br>feePayer CjNFTjvB…eKww · sponsored</div>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>07 · demo: 402</b><span>frame-07 · 86–101s</span></div>
+    <p class="note"><strong>"402" stamps in holo first</strong>, then the decoded rows land one per cue. These are real PAYMENT-REQUIRED values.</p>
+    <span class="seam">→ crossfade</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-08">
+      <div class="tagw">agent wallet · USDC → SOL</div><div class="num">08 / 13</div>
+      <div class="pad" style="top:9cqw;bottom:22%;display:flex;flex-direction:column">
+        <div class="box" style="padding:1.2cqw 2cqw;display:flex;justify-content:space-between"><span class="disp" style="font-size:3cqw">x402 fee paid</span><span class="green lbl" style="padding:.4cqw .8cqw">✓</span></div>
+        <div class="box" style="padding:1.2cqw 2cqw;display:flex;justify-content:space-between;border-top:none"><span class="disp" style="font-size:3cqw">Signed locally</span><span class="green lbl" style="padding:.4cqw .8cqw">✓</span></div>
+        <div class="box" style="padding:1.2cqw 2cqw;display:flex;justify-content:space-between;border-top:none"><span class="disp" style="font-size:3cqw">Swap sent</span><span class="green lbl" style="padding:.4cqw .8cqw">✓</span></div>
+        <div class="box deep term" style="flex-grow:1;margin-top:1cqw;font-size:1.05cqw">▸ x402 fee paid  success: true · tx 3Vw7GZn4…c6f4e
+▸ Swap sent  solscan.io/tx/2SpRNZCS…BopWMx</div>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>08 · demo: pay, sign, send</b><span>frame-08 · 101–119s</span></div>
+    <p class="note"><strong>The receipts check off top-down</strong>, with the real x402 receipt and swap signature from the mainnet run (terminal-paid-run.txt).</p>
+    <span class="seam">→ push-slide left</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-09">
+      <div class="tagw ok">agent wallet · SOL ✓</div><div class="num">09 / 13</div>
+      <div class="shot" style="left:4.4cqw;top:15%;width:56%;bottom:22%;background-image:url(capture/assets/solscan-tx.png);background-position:0 26%;background-size:140%"></div>
+      <div class="box deep" style="position:absolute;left:62%;right:4.4cqw;top:15%;bottom:22%;padding:1.6cqw;display:flex;flex-direction:column;justify-content:space-between">
+        <span class="lbl">On-chain · mainnet</span>
+        <span class="disp" style="font-size:3.2cqw">1 USDC<br>→ 0.008186967 SOL</span>
+        <span class="lbl"><span class="green" style="padding:.2cqw .5cqw">$0.01 fee</span> · 0 keys</span>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>09 · demo: on-chain</b><span>frame-09 · 119–131s · held</span></div>
+    <p class="note"><strong>The held frame:</strong> Solscan slides in, "Success" gets outlined, then everything holds. The tag turns green (SOL ✓), a callback to 01.</p>
+    <span class="seam">→ zoom-through</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-10">
+      <div class="num">10 / 13</div>
+      <div class="pad" style="top:8cqw;bottom:22%;display:flex;flex-direction:column;gap:1.2cqw">
+        <span class="lbl">MCP · any client</span>
+        <div class="disp" style="font-size:3.4cqw">"How much BONK for 5 USDC?"</div>
+        <div class="box deep term" style="font-size:1.25cqw"><span class="m">⚙ agentswap · get_quote</span>  {from: USDC, to: BONK, amount: 5}
+→ outAmount <span style="color:var(--g)">1366700</span> BONK
+  route  BisonFi → Whirlpool → Scorch</div>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>10 · ask claude</b><span>frame-10 · ~131–146s</span></div>
+    <p class="note"><strong>The question types in, then the tool-call row, then the real result</strong> (mcp-get-quote.txt). It uses a neutral layout, not Claude's UI.</p>
+    <span class="seam">→ crossfade</span>
+  </section>
+</div>
+
+<div class="act">Act 4 · breadth, future, cta</div>
+<div class="grid">
+  <section>
+    <div class="f" id="frame-11">
+      <div class="num">11 / 13</div>
+      <div class="pad" style="top:8cqw;bottom:22%;display:flex;flex-direction:column;gap:1.4cqw">
+        <div class="disp" style="font-size:4.4cqw">Four ways in.</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);flex-grow:1" class="box">
+          <div style="padding:1.2cqw;border-right:.16cqw solid var(--cream)"><div class="disp" style="font-size:2cqw">HTTP API</div><div class="lbl m" style="margin-top:1cqw">/quote · /swap</div></div>
+          <div class="deep" style="padding:1.2cqw;border-right:.16cqw solid var(--cream)"><div class="disp" style="font-size:2cqw">MCP</div><div class="lbl m" style="margin-top:1cqw">get_quote</div></div>
+          <div style="padding:1.2cqw;border-right:.16cqw solid var(--cream)"><div class="disp" style="font-size:2cqw">SKILL.MD</div><div class="lbl m" style="margin-top:1cqw">drop-in skill</div></div>
+          <div style="padding:1.2cqw"><div class="disp" style="font-size:2cqw">LLMS.TXT</div><div class="lbl m" style="margin-top:1cqw">discoverable</div></div>
+        </div>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>11 · built for agents</b><span>frame-11 · 12s</span></div>
+    <p class="note"><strong>The cells fill left → right, one per VO noun</strong>, with scroll-069.png as a backplate after the fill.</p>
+    <span class="seam">→ zoom-through (section)</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-12">
+      <div class="num">12 / 13</div>
+      <div class="pad" style="top:8cqw;bottom:22%;display:flex;flex-direction:column;gap:1.4cqw">
+        <div class="disp" style="font-size:4.4cqw">Where this goes.</div>
+        <div class="box" style="display:grid;grid-template-columns:repeat(3,1fr);flex-grow:1">
+          <div style="border-right:.16cqw solid var(--cream)"><div class="green lbl" style="padding:.8cqw 1.2cqw">Now · shipped</div><div class="disp" style="font-size:2.2cqw;padding:1.2cqw">Wrapper</div></div>
+          <div style="border-right:.16cqw solid var(--cream)"><div class="holo lbl" style="padding:.8cqw 1.2cqw">Next</div><div class="disp" style="font-size:2.2cqw;padding:1.2cqw">Own pools</div></div>
+          <div><div class="lbl" style="padding:.8cqw 1.2cqw;border-bottom:.16cqw solid var(--cream)">Later</div><div class="disp" style="font-size:2.2cqw;padding:1.2cqw">Any token</div></div>
+        </div>
+      </div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>12 · what's next</b><span>frame-12 · 15s</span></div>
+    <p class="note"><strong>The camera pans leftward over the landing's roadmap.</strong> Only "Now" is green, so plans never read as shipped.</p>
+    <span class="seam">→ crossfade</span>
+  </section>
+
+  <section>
+    <div class="f" id="frame-13">
+      <div class="tagw ok">agent wallet · SOL ✓</div><div class="num">13 / 13</div>
+      <div class="pad" style="top:9cqw;bottom:22%;display:grid;grid-template-columns:1fr 32%;gap:0">
+        <div class="box" style="padding:2cqw;display:flex;flex-direction:column;justify-content:space-between;border-right:none">
+          <div class="disp" style="font-size:6.4cqw">AgentSwap</div>
+          <div class="disp" style="font-size:2.4cqw">Let your agent pay with <span class="holo-text">whatever the world accepts.</span></div>
+          <div class="deep lbl" style="padding:1cqw 1.2cqw">$ claude mcp add --transport http agentswap …/mcp</div>
+        </div>
+        <div class="box deep" style="position:relative"><svg class="cal" style="inset:15%;width:70%;height:70%"><use href="#caltrop"/></svg></div>
+      </div>
+      <div class="prog"><i class="holo" style="width:100%"></i></div>
+      <div class="capzone"><span>captions</span></div>
+    </div>
+    <div class="meta"><b>13 · plug it in</b><span>frame-13 · 10s</span></div>
+    <p class="note"><strong>The caltrop returns</strong> (callback to 01), the command types out, and the holo progress line reaches full width. It ends on a blinking caret.</p>
+    <span class="seam">end</span>
+  </section>
+
+  <section>
+    <div class="f deep">
+      <div class="pad" style="display:flex;flex-direction:column;justify-content:center;gap:1.4cqw">
+        <div class="lbl">Seam map · leftward</div>
+        <div style="font:500 1.35cqw/2 'Geist Mono',monospace">01 ─fade→ 02 ─<span style="color:var(--g)">zoom</span>→ 03 ─fade→ 04 ─push←→ 05 ─<span style="color:var(--g)">zoom</span>→ 06 ─fade→ 07 ─fade→ 08 ─push←→ 09 ─<span style="color:var(--g)">zoom</span>→ 10 ─fade→ 11 ─<span style="color:var(--g)">zoom</span>→ 12 ─fade→ 13</div>
+      </div>
+    </div>
+    <div class="meta"><b>seam map</b><span>13 seams</span></div>
+  </section>
+
+  <section>
+    <div class="f deep">
+      <div class="pad" style="display:flex;flex-direction:column;gap:1.4cqw">
+        <div class="lbl">Tokens · bans</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr)" class="box">
+          <div style="height:5cqw;background:#012136;border-right:.16cqw solid var(--cream)"></div>
+          <div style="height:5cqw;background:#000E18;border-right:.16cqw solid var(--cream)"></div>
+          <div style="height:5cqw;background:#F1EDE6;border-right:.16cqw solid var(--cream)"></div>
+          <div style="height:5cqw;background:#14F195;border-right:.16cqw solid var(--cream)"></div>
+          <div style="height:5cqw" class="holo"></div>
+        </div>
+        <div class="disp" style="font-size:2.6cqw">Archivo 900 · 125%</div>
+        <div class="lbl m" style="line-height:1.6">Geist Mono labels · 2px square frames · holo only on deep · green = price/live only · no radius, no dots, no glow, no fake UI, no invented numbers</div>
+      </div>
+    </div>
+    <div class="meta"><b>tokens</b><span>from frame.md</span></div>
+  </section>
+</div>
+</body>
+</html>

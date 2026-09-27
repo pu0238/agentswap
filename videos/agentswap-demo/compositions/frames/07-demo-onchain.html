@@ -1,0 +1,65 @@
+<template>
+<div id="root" data-composition-id="07-demo-onchain" data-width="1920" data-height="1080" data-duration="6.011">
+  <style>
+  @font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("assets/fonts/archivo-latin-wdth-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("assets/fonts/geist-mono-500.woff2") format("woff2"); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Archivo", sans-serif; color: #121212; }
+  .f07-bg { position: absolute; inset: 0; background: #DCD3C6; }
+  .f07-stage { position: absolute; inset: 0; }
+  .f07-disp { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: 0.88; text-transform: uppercase; }
+  .f07-mono { font-family: "Geist Mono", monospace; text-transform: uppercase; }
+  .f07-muted { color: #6E685F; }
+  .f07-deep .f07-muted { color: #9A9287; }
+  .f07-frame { border: 3px solid #121212; }
+  .f07-deep { background: #121212; color: #DCD3C6; }
+  .f07-green { background: #14F195; color: #121212; }
+  .f07-holo { background-image: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); background-size: 300% 300%; background-position: 0% 50%; color: #012136; }
+  .f07-htext { background-image: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f,#ff9bd2); background-size: 250% 100%; background-position: 0% 50%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .f07-tag { position: absolute; left: 120px; top: 56px; font-family: "Geist Mono", monospace; font-size: 26px; text-transform: uppercase; border: 3px solid #121212; padding: 12px 18px; line-height: 1; }
+  .f07-count { position: absolute; right: 120px; top: 64px; font-family: "Geist Mono", monospace; font-size: 26px; color: #121212; }
+  .f07-bars { position: absolute; right: 250px; top: 58px; width: 150px; height: 34px; background: repeating-linear-gradient(90deg,#121212 0 2px,transparent 2px 4px,#121212 4px 5px,transparent 5px 9px,#121212 9px 13px,transparent 13px 14px,#121212 14px 15px,transparent 15px 19px,#121212 19px 20px,transparent 20px 23px); }
+  .f07-track { position: absolute; left: 120px; right: 120px; top: 876px; height: 10px; background: #121212; overflow: hidden; }
+  .f07-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: 0 50%; }
+  .f07-term { font-family: "Geist Mono", monospace; white-space: pre; }
+</style>
+  <div class="clip f07-bg" data-start="0" data-duration="6.011" data-track-index="0"></div>
+  <div class="clip f07-stage" data-p="f07" data-start="0" data-duration="6.011" data-track-index="1">
+    <div id="f07-tag" class="f07-tag f07-green">agent wallet · SOL ✓</div>
+    <span class="f07-bars"></span><div class="f07-count">07 / 10</div>
+    <div class="f07-track"><div id="f07-fill" class="f07-fill f07-holo"></div></div>
+    
+    <div id="f07-shot" class="f07-frame" style="position:absolute;left:120px;top:160px;width:1060px;height:680px;overflow:hidden;background:#FFFFFF">
+      <img src="assets/solscan-tx.png" alt="" data-layout-allow-overflow style="position:absolute;left:-190px;top:-230px;width:1920px;display:block">
+    </div>
+    <div id="f07-ok" style="position:absolute;left:512px;top:340px;width:430px;height:62px;border:6px solid #14F195"></div>
+    <div class="f07-frame f07-deep" style="position:absolute;left:1180px;right:120px;top:160px;height:680px;padding:40px;display:flex;flex-direction:column;justify-content:space-between">
+      <div class="f07-mono f07-muted" style="font-size:26px">Solscan · finalized</div>
+      <div class="f07-disp" style="font-size:64px"><span id="f07-in" style="display:block">1 USDC in</span><span id="f07-out" style="display:block;margin-top:24px">0.008186967<br>SOL out</span></div>
+      <div class="f07-mono f07-muted" style="font-size:24px;text-transform:none">signer 7QbNPZ…DuSL</div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  
+  <script>
+
+  const tl = gsap.timeline({ paused: true });
+  const R = (sel, t, extra) => tl.fromTo(sel, { opacity: 0, y: 26 }, Object.assign({ opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, extra || {}), t);
+  const W = (sel, t, d) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d || 0.45, ease: "power3.out" }, t);
+  const TYPE = (sel, t, d, steps) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d, ease: "steps(" + steps + ")" }, t);
+  // hard cuts: discrete sets only (a later fromTo would render its from-state early when seeking)
+  const CUT = (sel, t) => { tl.set(sel, { opacity: 0 }, 0); tl.set(sel, { opacity: 1 }, t); };
+  const OFF = (sel, t) => tl.set(sel, { opacity: 0 }, t);
+  tl.fromTo("#f07-fill", { scaleX: 0.6237 }, { scaleX: 0.7064, duration: 5.611, ease: "none" }, 0);
+  document.querySelectorAll("[data-p='f07'] .f07-holo, [data-p='f07'] .f07-htext").forEach((el) => {
+    tl.fromTo(el, { backgroundPosition: "0% 50%" }, { backgroundPosition: "100% 50%", duration: 5.611, ease: "none" }, 0);
+  });
+
+  W("#f07-shot", 0.6, 0.5);
+  W("#f07-ok", 1.0, 0.4);
+  R("#f07-in", 1.8);
+  R("#f07-out", 3.9);
+
+  window.__timelines["07-demo-onchain"] = tl;
+  </script>
+</div>
+</template>

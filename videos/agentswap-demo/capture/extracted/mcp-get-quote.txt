@@ -1,0 +1,13 @@
+{
+  "from": "USDC",
+  "to": "BONK",
+  "inAmount": "5",
+  "outAmount": "1366700",
+  "minOutAmount": "1359866.5",
+  "priceImpactPct": "0",
+  "route": [
+    "BisonFi",
+    "Whirlpool",
+    "Scorch"
+  ]
+}

@@ -1,0 +1,65 @@
+<template>
+<div id="root" data-composition-id="08-ask-claude" data-width="1920" data-height="1080" data-duration="9.551">
+  <style>
+  @font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("assets/fonts/archivo-latin-wdth-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("assets/fonts/geist-mono-500.woff2") format("woff2"); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Archivo", sans-serif; color: #121212; }
+  .f08-bg { position: absolute; inset: 0; background: #DCD3C6; }
+  .f08-stage { position: absolute; inset: 0; }
+  .f08-disp { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: 0.88; text-transform: uppercase; }
+  .f08-mono { font-family: "Geist Mono", monospace; text-transform: uppercase; }
+  .f08-muted { color: #6E685F; }
+  .f08-deep .f08-muted { color: #9A9287; }
+  .f08-frame { border: 3px solid #121212; }
+  .f08-deep { background: #121212; color: #DCD3C6; }
+  .f08-green { background: #14F195; color: #121212; }
+  .f08-holo { background-image: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); background-size: 300% 300%; background-position: 0% 50%; color: #012136; }
+  .f08-htext { background-image: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f,#ff9bd2); background-size: 250% 100%; background-position: 0% 50%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .f08-tag { position: absolute; left: 120px; top: 56px; font-family: "Geist Mono", monospace; font-size: 26px; text-transform: uppercase; border: 3px solid #121212; padding: 12px 18px; line-height: 1; }
+  .f08-count { position: absolute; right: 120px; top: 64px; font-family: "Geist Mono", monospace; font-size: 26px; color: #121212; }
+  .f08-bars { position: absolute; right: 250px; top: 58px; width: 150px; height: 34px; background: repeating-linear-gradient(90deg,#121212 0 2px,transparent 2px 4px,#121212 4px 5px,transparent 5px 9px,#121212 9px 13px,transparent 13px 14px,#121212 14px 15px,transparent 15px 19px,#121212 19px 20px,transparent 20px 23px); }
+  .f08-track { position: absolute; left: 120px; right: 120px; top: 876px; height: 10px; background: #121212; overflow: hidden; }
+  .f08-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: 0 50%; }
+  .f08-term { font-family: "Geist Mono", monospace; white-space: pre; }
+</style>
+  <div class="clip f08-bg" data-start="0" data-duration="9.551" data-track-index="0"></div>
+  <div class="clip f08-stage" data-p="f08" data-start="0" data-duration="9.551" data-track-index="1">
+    
+    <span class="f08-bars"></span><div class="f08-count">08 / 10</div>
+    <div class="f08-track"><div id="f08-fill" class="f08-fill f08-holo"></div></div>
+    
+    <div style="position:absolute;left:120px;right:120px;top:140px;display:flex;flex-direction:column;gap:24px">
+      <div id="f08-k" class="f08-mono f08-muted" style="font-size:28px">MCP · Claude · Claude Code</div>
+      <div id="f08-h" class="f08-disp" style="font-size:80px">Also an MCP server.</div>
+      <div id="f08-q" class="f08-disp" style="font-size:64px;align-self:flex-start">"How much BONK for 5 USDC?"</div>
+      <div id="f08-res" class="f08-frame f08-deep f08-term" style="font-size:36px;line-height:1.6;padding:26px 32px"><span class="f08-muted">⚙ agentswap · get_quote  {from: USDC, to: BONK, amount: 5}</span>
+<span id="f08-o1" style="display:inline-block">→ <span style="color:#14F195">1,366,700 BONK</span>  via BisonFi → Whirlpool → Scorch</span></div>
+      <div id="f08-cc" class="f08-frame f08-mono" style="font-size:30px;padding:18px 28px;text-transform:none;display:flex;gap:18px;align-items:center"><span class="f08-green" style="padding:2px 12px">Claude Code</span><span>your trading strategy</span><span class="f08-muted">→ /api/quote + /api/swap (x402)</span></div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  
+  <script>
+
+  const tl = gsap.timeline({ paused: true });
+  const R = (sel, t, extra) => tl.fromTo(sel, { opacity: 0, y: 26 }, Object.assign({ opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, extra || {}), t);
+  const W = (sel, t, d) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d || 0.45, ease: "power3.out" }, t);
+  const TYPE = (sel, t, d, steps) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d, ease: "steps(" + steps + ")" }, t);
+  // hard cuts: discrete sets only (a later fromTo would render its from-state early when seeking)
+  const CUT = (sel, t) => { tl.set(sel, { opacity: 0 }, 0); tl.set(sel, { opacity: 1 }, t); };
+  const OFF = (sel, t) => tl.set(sel, { opacity: 0 }, t);
+  tl.fromTo("#f08-fill", { scaleX: 0.7064 }, { scaleX: 0.8400, duration: 9.051, ease: "none" }, 0);
+  document.querySelectorAll("[data-p='f08'] .f08-holo, [data-p='f08'] .f08-htext").forEach((el) => {
+    tl.fromTo(el, { backgroundPosition: "0% 50%" }, { backgroundPosition: "100% 50%", duration: 9.051, ease: "none" }, 0);
+  });
+
+  R("#f08-k", 0.3); R("#f08-h", 0.9);
+  TYPE("#f08-q", 2.3, 1.7, 26);
+  W("#f08-res", 4.6, 0.4);
+  R("#f08-o1", 4.9, { duration: 0.3 });
+  W("#f08-cc", 5.7, 0.45);
+
+  window.__timelines["08-ask-claude"] = tl;
+  </script>
+</div>
+</template>

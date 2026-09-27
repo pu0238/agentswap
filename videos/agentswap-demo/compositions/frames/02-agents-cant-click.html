@@ -1,0 +1,69 @@
+<template>
+<div id="root" data-composition-id="02-agents-cant-click" data-width="1920" data-height="1080" data-duration="6.821">
+  <style>
+  @font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("assets/fonts/archivo-latin-wdth-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("assets/fonts/geist-mono-500.woff2") format("woff2"); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Archivo", sans-serif; color: #121212; }
+  .f02-bg { position: absolute; inset: 0; background: #DCD3C6; }
+  .f02-stage { position: absolute; inset: 0; }
+  .f02-disp { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: 0.88; text-transform: uppercase; }
+  .f02-mono { font-family: "Geist Mono", monospace; text-transform: uppercase; }
+  .f02-muted { color: #6E685F; }
+  .f02-deep .f02-muted { color: #9A9287; }
+  .f02-frame { border: 3px solid #121212; }
+  .f02-deep { background: #121212; color: #DCD3C6; }
+  .f02-green { background: #14F195; color: #121212; }
+  .f02-holo { background-image: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); background-size: 300% 300%; background-position: 0% 50%; color: #012136; }
+  .f02-htext { background-image: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f,#ff9bd2); background-size: 250% 100%; background-position: 0% 50%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .f02-tag { position: absolute; left: 120px; top: 56px; font-family: "Geist Mono", monospace; font-size: 26px; text-transform: uppercase; border: 3px solid #121212; padding: 12px 18px; line-height: 1; }
+  .f02-count { position: absolute; right: 120px; top: 64px; font-family: "Geist Mono", monospace; font-size: 26px; color: #121212; }
+  .f02-bars { position: absolute; right: 250px; top: 58px; width: 150px; height: 34px; background: repeating-linear-gradient(90deg,#121212 0 2px,transparent 2px 4px,#121212 4px 5px,transparent 5px 9px,#121212 9px 13px,transparent 13px 14px,#121212 14px 15px,transparent 15px 19px,#121212 19px 20px,transparent 20px 23px); }
+  .f02-track { position: absolute; left: 120px; right: 120px; top: 876px; height: 10px; background: #121212; overflow: hidden; }
+  .f02-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: 0 50%; }
+  .f02-term { font-family: "Geist Mono", monospace; white-space: pre; }
+</style>
+  <div class="clip f02-bg" data-start="0" data-duration="6.821" data-track-index="0"></div>
+  <div class="clip f02-stage" data-p="f02" data-start="0" data-duration="6.821" data-track-index="1">
+    <div id="f02-tag" class="f02-tag">agent wallet · USDC</div>
+    <span class="f02-bars"></span><div class="f02-count">02 / 10</div>
+    <div class="f02-track"><div id="f02-fill" class="f02-fill f02-holo"></div></div>
+    
+    <div id="f02-split" style="position:absolute;left:120px;right:120px;top:160px;height:680px;display:grid;grid-template-columns:1fr 1fr">
+      <div class="f02-frame" style="border-right:none;padding:48px;display:flex;flex-direction:column;gap:34px">
+        <div class="f02-mono f02-muted" style="font-size:28px">A swap today</div>
+        <div id="f02-s1" class="f02-disp" style="font-size:66px;position:relative;white-space:nowrap;align-self:flex-start">Open a DEX<span id="f02-x1" style="position:absolute;left:0;right:0;top:46%;height:10px;background:#14F195"></span></div>
+        <div id="f02-s2" class="f02-disp" style="font-size:66px;position:relative;white-space:nowrap;align-self:flex-start">Wallet popup<span id="f02-x2" style="position:absolute;left:0;right:0;top:46%;height:10px;background:#14F195"></span></div>
+        <div id="f02-s3" class="f02-disp" style="font-size:66px;position:relative;white-space:nowrap;align-self:flex-start">Click<span id="f02-x3" style="position:absolute;left:0;right:0;top:46%;height:10px;background:#14F195"></span></div>
+      </div>
+      <div class="f02-frame f02-deep" style="padding:48px;display:flex;flex-direction:column;justify-content:flex-end">
+        <div class="f02-disp" style="font-size:96px"><span id="f02-a1" style="display:block">But an agent can't</span><span id="f02-a2" class="f02-htext" style="display:block">click.</span></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  
+  <script>
+
+  const tl = gsap.timeline({ paused: true });
+  const R = (sel, t, extra) => tl.fromTo(sel, { opacity: 0, y: 26 }, Object.assign({ opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, extra || {}), t);
+  const W = (sel, t, d) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d || 0.45, ease: "power3.out" }, t);
+  const TYPE = (sel, t, d, steps) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d, ease: "steps(" + steps + ")" }, t);
+  // hard cuts: discrete sets only (a later fromTo would render its from-state early when seeking)
+  const CUT = (sel, t) => { tl.set(sel, { opacity: 0 }, 0); tl.set(sel, { opacity: 1 }, t); };
+  const OFF = (sel, t) => tl.set(sel, { opacity: 0 }, t);
+  tl.fromTo("#f02-fill", { scaleX: 0.0857 }, { scaleX: 0.1805, duration: 6.421, ease: "none" }, 0);
+  document.querySelectorAll("[data-p='f02'] .f02-holo, [data-p='f02'] .f02-htext").forEach((el) => {
+    tl.fromTo(el, { backgroundPosition: "0% 50%" }, { backgroundPosition: "100% 50%", duration: 6.421, ease: "none" }, 0);
+  });
+
+  W("#f02-split", 0.0, 0.5);
+  R("#f02-s1", 1.4); R("#f02-s2", 2.3); R("#f02-s3", 3.6);
+  [["#f02-x1", 1.8], ["#f02-x2", 2.8], ["#f02-x3", 4.0]].forEach(([s, t]) => tl.fromTo(s, { scaleX: 0, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.3, ease: "power3.out" }, t));
+  [["#f02-s1", 1.8], ["#f02-s2", 2.8], ["#f02-s3", 4.0]].forEach(([s, t]) => tl.to(s, { color: "#6E685F", duration: 0.3 }, t));
+  R("#f02-a1", 4.3);
+  R("#f02-a2", 5.2);
+
+  window.__timelines["02-agents-cant-click"] = tl;
+  </script>
+</div>
+</template>

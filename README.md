@@ -28,10 +28,13 @@ pnpm dev                       # http://localhost:8787
 pnpm demo USDC SOL 1           # dry run: prints the quote and the x402 challenge
 ```
 
-Full demo on mainnet (use a throwaway wallet holding ~$2 USDC and ~0.01 SOL):
+Full demo on mainnet:
 
 ```bash
-AGENT_SECRET_KEY='<base58 secret or [json,bytes]>' pnpm demo USDC SOL 1
+cp .dev.vars.example .dev.vars   # set PAY_TO (wallet that receives fees)
+cp .env.example .env             # set AGENT_SECRET_KEY (throwaway wallet: ~$2 USDC + ~0.01 SOL)
+pnpm dev                         # restart so .dev.vars is picked up
+pnpm demo USDC SOL 1
 ```
 
 ## Config (`wrangler.jsonc` vars)

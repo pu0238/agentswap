@@ -1,0 +1,28 @@
+
+▸ Quote 1 USDC → SOL {
+  "from": "USDC",
+  "to": "SOL",
+  "inAmount": "1",
+  "outAmount": "0.008235526",
+  "minOutAmount": "0.008194349",
+  "priceImpactPct": "0.0000217644436453856559875844",
+  "route": [
+    "GoonFi V2"
+  ]
+}
+
+▸ POST /api/swap without payment → HTTP 402 [
+  {
+    "scheme": "exact",
+    "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+    "amount": "10000",
+    "asset": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "payTo": "REPLACE_WITH_YOUR_SOLANA_ADDRESS",
+    "maxTimeoutSeconds": 300,
+    "extra": {
+      "feePayer": "CjNFTjvBhbJJd2B5ePPMHRLx1ELZpa8dwQgGL727eKww"
+    }
+  }
+]
+
+Dry run. Set AGENT_SECRET_KEY to pay and execute the swap.

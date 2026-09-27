@@ -1,0 +1,53 @@
+{
+  "provider": "heygen",
+  "speed": 1,
+  "lines": [
+    {
+      "id": "01",
+      "text": "Your agent has USDC. But the site wants SOL. Or BONK. Or JUP."
+    },
+    {
+      "id": "02",
+      "text": "Swapping takes a DEX, a wallet popup and a click. But an agent can't click."
+    },
+    {
+      "id": "03",
+      "text": "That's why we built AgentSwap: swaps and payments made for agents. It builds the transaction through Jupiter, and your agent signs it. We never touch the keys."
+    },
+    {
+      "id": "04",
+      "text": "Here is a real agent on mainnet. It asks for a quote. That part is free."
+    },
+    {
+      "id": "05",
+      "text": "Then it asks for the swap. The server answers 402: one cent, in USDC."
+    },
+    {
+      "id": "06",
+      "text": "Its x402 client pays, gets an unsigned transaction, signs it locally and sends it. No human in the loop."
+    },
+    {
+      "id": "07",
+      "text": "Confirmed on Solscan: one USDC in, SOL out."
+    },
+    {
+      "id": "08",
+      "text": "It's also an MCP server. Ask Claude how much BONK five USDC buys, or let Claude Code build your trading strategy on top of the API."
+    },
+    {
+      "id": "09",
+      "text": "Next: our own liquidity pools, built for agent flow."
+    },
+    {
+      "id": "10",
+      "text": "AgentSwap. Let your agent pay with whatever the world accepts. Plug it in today."
+    }
+  ],
+  "bgm": {
+    "mode": "retrieve",
+    "query": "confident minimal tech underscore, low and steady",
+    "blob": "AgentSwap lets any AI agent swap Solana tokens in one x402-paid HTTP call, and it never touches the agent's keys.",
+    "arc": "hook → pain → product → one continuous live demo (quote → 402 → pay/sign/send → on-chain) → MCP → next → CTA"
+  },
+  "voice": "0689bc48935243788e2a830ecae87b7d"
+}

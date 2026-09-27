@@ -1,0 +1,169 @@
+{
+  "files": [
+    {
+      "file": "k3kQo8UDI-1M0wlSfdboLmvDIaK18A.woff2",
+      "family": "Archivo",
+      "rawFamily": "Archivo SemiBold",
+      "subfamily": "Regular",
+      "postscript": "Archivo-SemiBold",
+      "weight": 600,
+      "style": "normal",
+      "variationAxes": [
+        "wght",
+        "wdth"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "k3kQo8UDI-1M0wlSfdfoLmvDIaK18A.woff2",
+      "family": "Archivo",
+      "rawFamily": "Archivo SemiBold",
+      "subfamily": "Regular",
+      "postscript": "Archivo-SemiBold",
+      "weight": 600,
+      "style": "normal",
+      "variationAxes": [
+        "wght",
+        "wdth"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "k3kQo8UDI-1M0wlSfdnoLmvDIaI.woff2",
+      "family": "Archivo",
+      "rawFamily": "Archivo SemiBold",
+      "subfamily": "Regular",
+      "postscript": "Archivo-SemiBold",
+      "weight": 600,
+      "style": "normal",
+      "variationAxes": [
+        "wght",
+        "wdth"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "or3nQ6H-1_WfwkMZI_qYFg08vz7MhEIVVeA.woff2",
+      "family": "Geist Mono",
+      "rawFamily": "Geist Mono",
+      "subfamily": "Regular",
+      "postscript": "GeistMono-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "or3nQ6H-1_WfwkMZI_qYFrMdmhHkjkotbA.woff2",
+      "family": "Geist Mono",
+      "rawFamily": "Geist Mono",
+      "subfamily": "Regular",
+      "postscript": "GeistMono-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "or3nQ6H-1_WfwkMZI_qYFrcdmhHkjko.woff2",
+      "family": "Geist Mono",
+      "rawFamily": "Geist Mono",
+      "subfamily": "Regular",
+      "postscript": "GeistMono-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "or3nQ6H-1_WfwkMZI_qYFrgdmhHkjkotbA.woff2",
+      "family": "Geist Mono",
+      "rawFamily": "Geist Mono",
+      "subfamily": "Regular",
+      "postscript": "GeistMono-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "or3nQ6H-1_WfwkMZI_qYFrkdmhHkjkotbA.woff2",
+      "family": "Geist Mono",
+      "rawFamily": "Geist Mono",
+      "subfamily": "Regular",
+      "postscript": "GeistMono-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "or3nQ6H-1_WfwkMZI_qYFrodmhHkjkotbA.woff2",
+      "family": "Geist Mono",
+      "rawFamily": "Geist Mono",
+      "subfamily": "Regular",
+      "postscript": "GeistMono-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    }
+  ],
+  "families": [
+    {
+      "family": "Archivo",
+      "weights": [
+        600
+      ],
+      "variable": true,
+      "fileCount": 3,
+      "files": [
+        "k3kQo8UDI-1M0wlSfdboLmvDIaK18A.woff2",
+        "k3kQo8UDI-1M0wlSfdfoLmvDIaK18A.woff2",
+        "k3kQo8UDI-1M0wlSfdnoLmvDIaI.woff2"
+      ]
+    },
+    {
+      "family": "Geist Mono",
+      "weights": [
+        400
+      ],
+      "variable": true,
+      "fileCount": 6,
+      "files": [
+        "or3nQ6H-1_WfwkMZI_qYFg08vz7MhEIVVeA.woff2",
+        "or3nQ6H-1_WfwkMZI_qYFrMdmhHkjkotbA.woff2",
+        "or3nQ6H-1_WfwkMZI_qYFrcdmhHkjko.woff2",
+        "or3nQ6H-1_WfwkMZI_qYFrgdmhHkjkotbA.woff2",
+        "or3nQ6H-1_WfwkMZI_qYFrkdmhHkjkotbA.woff2",
+        "or3nQ6H-1_WfwkMZI_qYFrodmhHkjkotbA.woff2"
+      ]
+    }
+  ],
+  "unidentified": [],
+  "meta": {
+    "generatedAt": "2026-09-27T08:41:04.072Z",
+    "tool": "fontkit"
+  }
+}

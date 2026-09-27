@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "youtube",
+      "confirmed_in": [
+        "agentswap-demo"
+      ],
+      "updated_at": "2026-09-27T06:30:22.809Z"
+    },
+    "aspect": {
+      "value": "1920x1080",
+      "confirmed_in": [
+        "agentswap-demo"
+      ],
+      "updated_at": "2026-09-27T06:30:22.841Z"
+    },
+    "language": {
+      "value": "en",
+      "confirmed_in": [
+        "agentswap-demo"
+      ],
+      "updated_at": "2026-09-27T06:30:23.397Z"
+    },
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "agentswap-demo"
+      ],
+      "updated_at": "2026-09-27T06:30:24.062Z"
+    },
+    "storyboard": {
+      "value": "yes",
+      "confirmed_in": [
+        "agentswap-demo"
+      ],
+      "updated_at": "2026-09-27T06:30:24.095Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "broadside",
+      "confirmed_in": [
+        "agentswap-demo"
+      ],
+      "updated_at": "2026-09-27T06:31:19.189Z"
+    }
+  },
+  "sightings": {}
+}

@@ -1,0 +1,96 @@
+<template>
+<div id="root" data-composition-id="01-wrong-token" data-width="1920" data-height="1080" data-duration="6.312">
+  <style>
+  @font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("assets/fonts/archivo-latin-wdth-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("assets/fonts/geist-mono-500.woff2") format("woff2"); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Archivo", sans-serif; color: #121212; }
+  .f01-bg { position: absolute; inset: 0; background: #DCD3C6; }
+  .f01-stage { position: absolute; inset: 0; }
+  .f01-disp { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: 0.88; text-transform: uppercase; }
+  .f01-mono { font-family: "Geist Mono", monospace; text-transform: uppercase; }
+  .f01-muted { color: #6E685F; }
+  .f01-deep .f01-muted { color: #9A9287; }
+  .f01-frame { border: 3px solid #121212; }
+  .f01-deep { background: #121212; color: #DCD3C6; }
+  .f01-green { background: #14F195; color: #121212; }
+  .f01-holo { background-image: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); background-size: 300% 300%; background-position: 0% 50%; color: #012136; }
+  .f01-htext { background-image: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f,#ff9bd2); background-size: 250% 100%; background-position: 0% 50%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .f01-tag { position: absolute; left: 120px; top: 56px; font-family: "Geist Mono", monospace; font-size: 26px; text-transform: uppercase; border: 3px solid #121212; padding: 12px 18px; line-height: 1; }
+  .f01-count { position: absolute; right: 120px; top: 64px; font-family: "Geist Mono", monospace; font-size: 26px; color: #121212; }
+  .f01-bars { position: absolute; right: 250px; top: 58px; width: 150px; height: 34px; background: repeating-linear-gradient(90deg,#121212 0 2px,transparent 2px 4px,#121212 4px 5px,transparent 5px 9px,#121212 9px 13px,transparent 13px 14px,#121212 14px 15px,transparent 15px 19px,#121212 19px 20px,transparent 20px 23px); }
+  .f01-track { position: absolute; left: 120px; right: 120px; top: 876px; height: 10px; background: #121212; overflow: hidden; }
+  .f01-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: 0 50%; }
+  .f01-term { font-family: "Geist Mono", monospace; white-space: pre; }
+</style>
+  <div class="clip f01-bg" data-start="0" data-duration="6.312" data-track-index="0"></div>
+  <div class="clip f01-stage" data-p="f01" data-start="0" data-duration="6.312" data-track-index="1">
+    <div id="f01-tag" class="f01-tag">agent wallet · USDC</div>
+    <span class="f01-bars"></span><div class="f01-count">01 / 10</div>
+    <div class="f01-track"><div id="f01-fill" class="f01-fill f01-holo"></div></div>
+    
+    <div id="f01-lens" class="f01-frame f01-deep" style="position:absolute;right:120px;top:150px;width:640px;height:680px;overflow:hidden">
+      <canvas id="f01-cal" width="634" height="674" style="position:absolute;left:0;top:0;width:634px;height:674px;display:block"></canvas>
+    </div>
+    <div style="position:absolute;left:120px;top:190px;width:1000px;display:flex;flex-direction:column;gap:18px">
+      <div class="f01-disp" style="font-size:112px"><span id="f01-l1a" style="display:block">Your agent</span><span id="f01-l1b" style="display:block">has <span id="f01-usdc">USDC.</span></span></div>
+      <div id="f01-l2" class="f01-disp f01-muted" style="font-size:84px;margin-top:22px">But the site wants</div>
+      <div class="f01-deep" style="position:relative;width:600px;height:160px">
+        <div id="f01-t1" class="f01-disp f01-htext" style="position:absolute;left:26px;top:24px;font-size:136px">SOL.</div>
+        <div id="f01-t2" class="f01-disp f01-htext" style="position:absolute;left:26px;top:24px;font-size:136px">BONK.</div>
+        <div id="f01-t3" class="f01-disp f01-htext" style="position:absolute;left:26px;top:24px;font-size:136px">JUP.</div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script src="assets/vendor/three.min.js"></script>
+  <script>
+
+  const tl = gsap.timeline({ paused: true });
+  const R = (sel, t, extra) => tl.fromTo(sel, { opacity: 0, y: 26 }, Object.assign({ opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, extra || {}), t);
+  const W = (sel, t, d) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d || 0.45, ease: "power3.out" }, t);
+  const TYPE = (sel, t, d, steps) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d, ease: "steps(" + steps + ")" }, t);
+  // hard cuts: discrete sets only (a later fromTo would render its from-state early when seeking)
+  const CUT = (sel, t) => { tl.set(sel, { opacity: 0 }, 0); tl.set(sel, { opacity: 1 }, t); };
+  const OFF = (sel, t) => tl.set(sel, { opacity: 0 }, t);
+  tl.fromTo("#f01-fill", { scaleX: 0.0000 }, { scaleX: 0.0857, duration: 5.812, ease: "none" }, 0);
+  document.querySelectorAll("[data-p='f01'] .f01-holo, [data-p='f01'] .f01-htext").forEach((el) => {
+    tl.fromTo(el, { backgroundPosition: "0% 50%" }, { backgroundPosition: "100% 50%", duration: 5.812, ease: "none" }, 0);
+  });
+
+  W("#f01-lens", 0.1, 0.6);
+  R("#f01-l1a", 0.3);
+  R("#f01-l1b", 0.9);
+  tl.fromTo("#f01-usdc", { backgroundColor: "rgba(20,241,149,0)" }, { backgroundColor: "rgba(20,241,149,1)", duration: 0.2 }, 1.2);
+  R("#f01-l2", 2.3);
+  CUT("#f01-t1", 3.2); OFF("#f01-t1", 4.1);
+  CUT("#f01-t2", 4.1); OFF("#f01-t2", 4.9);
+  CUT("#f01-t3", 4.9);
+
+  (function () {
+    const T = window.THREE, canvas = document.getElementById("f01-cal");
+    if (!T || !canvas) return;
+    const VS = "uniform float uTime; varying vec3 vN; varying vec3 vV;" +
+      "float arm(vec3 d, vec3 a){ float c = max(dot(d, normalize(a)), 0.0); return 1.3*pow(c, 12.0); }" +
+      "vec3 shape(vec3 d){ d = normalize(d); float r = 0.36 + arm(d, vec3(1.,1.,1.)) + arm(d, vec3(1.,-1.,-1.)) + arm(d, vec3(-1.,1.,-1.)) + arm(d, vec3(-1.,-1.,1.)); r += sin(d.x*6.0 + uTime)*0.012 + sin(d.y*5.0 - uTime*0.8)*0.012; return d * r; }" +
+      "void main(){ vec3 d = normalize(position); vec3 up = abs(d.y) < 0.99 ? vec3(0.,1.,0.) : vec3(1.,0.,0.); vec3 t = normalize(cross(d, up)); vec3 b = normalize(cross(d, t)); vec3 p = shape(d), p1 = shape(d + t*0.006), p2 = shape(d + b*0.006); vec3 n = normalize(cross(p1 - p, p2 - p)); if (dot(n, p) < 0.0) n = -n; vec4 mv = modelViewMatrix * vec4(p, 1.0); vN = normalize(normalMatrix * n); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }";
+    const FS = "uniform float uTime; varying vec3 vN; varying vec3 vV;" +
+      "vec3 pal(float t){ return 0.5 + 0.5*cos(6.2831*(t + vec3(0.0, 0.33, 0.67))); }" +
+      "void main(){ vec3 n = normalize(vN), v = normalize(vV); float f = 1.0 - max(dot(n, v), 0.0); vec3 irid = pal(f*1.5 + n.y*0.4 + n.x*0.3 + uTime*0.06); vec3 l = normalize(vec3(0.4, 0.8, 0.6)); float spec = pow(max(dot(reflect(-l, n), v), 0.0), 36.0); vec3 col = irid * (0.55 + 0.55*max(dot(n, l), 0.0)); col = mix(col, vec3(0.06, 0.06, 0.06), (1.0 - f) * 0.28); col += spec * 0.9 + pow(f, 3.0) * 0.3; gl_FragColor = vec4(col, 1.0); }";
+    const r = new T.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+    r.setPixelRatio(1); r.setSize(634, 674, false);
+    const scene = new T.Scene();
+    const cam = new T.PerspectiveCamera(34, 634/674, 0.1, 50);
+    cam.position.set(0, 0, 7.6 * Math.max(1, 0.85 / (634/674)));
+    const mat = new T.ShaderMaterial({ uniforms: { uTime: { value: 0 } }, vertexShader: VS, fragmentShader: FS });
+    const mesh = new T.Mesh(new T.SphereGeometry(1, 200, 200), mat);
+    scene.add(mesh);
+    const clock = { t: 0 };
+    const draw = () => { const t = clock.t + 4.0; mat.uniforms.uTime.value = t; mesh.rotation.set(0.6 + t * 0.17, t * 0.29, 0.2 + t * 0.11); r.render(scene, cam); };
+    tl.fromTo(clock, { t: 0 }, { t: 5.812, duration: 5.812, ease: "none", onUpdate: draw }, 0);
+    draw();
+  })();
+
+  window.__timelines["01-wrong-token"] = tl;
+  </script>
+</div>
+</template>

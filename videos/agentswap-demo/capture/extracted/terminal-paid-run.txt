@@ -1,0 +1,23 @@
+
+▸ Quote 1 USDC → SOL {
+  "from": "USDC",
+  "to": "SOL",
+  "inAmount": "1",
+  "outAmount": "0.008186968",
+  "minOutAmount": "0.008146034",
+  "priceImpactPct": "0",
+  "route": [
+    "Byreal"
+  ]
+}
+
+▸ Agent wallet "7QbNPZKywHvDKNmgWDXG1T2guvd6T8GAfpeu3ZkcDuSL"
+
+▸ x402 fee paid {
+  "success": true,
+  "payer": "7QbNPZKywHvDKNmgWDXG1T2guvd6T8GAfpeu3ZkcDuSL",
+  "transaction": "3Vw7GZn4gog2LE1ynnY7P889BQvqscs9CAePqSMhJq2X6G6cbmHiqmgXQCJWFZfCUBAYDe2qESTs4TGt5Nzc6f4e",
+  "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
+}
+
+▸ Swap sent "https://solscan.io/tx/2SpRNZCS6Gw3UeEpjGGaummpkxEJYfYrXCLyncwkooQCWT4kHUKNDyrbX3MBUjUirTmduHZAdAeW2u8jKgBopWMx"

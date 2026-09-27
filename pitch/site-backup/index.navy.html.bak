@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentSwap: swaps for AI agents on Solana</title>
+<meta name="description" content="Token swaps for AI agents on Solana. Pay $0.01 per call with x402, get an unsigned Jupiter-routed transaction, sign it yourself.">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #012136; --deep: #000E18; --cream: #F1EDE6; --muted: #8FA3B2; --green: #14F195;
+    --pad: clamp(16px, 8.3vw, 120px);
+    --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--navy); color: var(--cream); font-family: Archivo, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: #fff; }
+  .mono { font-family: var(--mono); }
+  .wrap { padding-inline: var(--pad); max-width: 1440px; margin-inline: auto; }
+  .display { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: 0.86; text-transform: uppercase; margin: 0; }
+  .label { font-family: var(--mono); font-size: 12px; letter-spacing: .02em; text-transform: uppercase; }
+  .frame { border: 2px solid var(--cream); }
+  .deep { background: var(--deep); }
+  section { margin-top: clamp(64px, 7.6vw, 110px); }
+
+  .holo { background: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); background-size: 300% 300%; animation: holo 7s ease-in-out infinite alternate; position: relative; overflow: hidden; color: var(--navy); }
+  .holo::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(62deg,rgba(255,255,255,0) 0 7px,rgba(255,255,255,.34) 8px,rgba(255,255,255,0) 12px), radial-gradient(120% 80% at 20% 0%,rgba(255,255,255,.55),rgba(255,255,255,0) 55%); mix-blend-mode: overlay; pointer-events: none; }
+  .holo > * { position: relative; z-index: 1; }
+  .holo-text { background: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f,#ff9bd2); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: holo 6s linear infinite alternate; }
+  @keyframes holo { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+  .bars { background: repeating-linear-gradient(90deg,var(--cream) 0 2px,transparent 2px 4px,var(--cream) 4px 5px,transparent 5px 9px,var(--cream) 9px 13px,transparent 13px 14px,var(--cream) 14px 15px,transparent 15px 19px,var(--cream) 19px 20px,transparent 20px 23px); }
+  .tag-green { background: var(--green); color: var(--navy); border: 1.5px solid var(--cream); padding: 2px 8px; }
+  @media (prefers-reduced-motion: reduce) { .holo, .holo-text, .mq { animation: none !important; } }
+
+  /* header */
+  header .bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 80px; border-bottom: 2px solid var(--cream); }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; font-stretch: 125%; letter-spacing: -0.03em; white-space: nowrap; flex-shrink: 0; }
+  .brand svg { flex-shrink: 0; }
+  nav { display: flex; align-items: center; gap: clamp(16px, 2.2vw, 32px); font-family: var(--mono); font-size: 13px; }
+  nav a { white-space: nowrap; }
+  nav .gh { background: var(--cream); color: var(--navy); padding: 9px 14px; }
+  nav .gh:hover { color: var(--navy); background: #fff; }
+  @media (max-width: 900px) { nav .link { display: none; } }
+
+  /* hero */
+  .hero { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); }
+  .hero-copy { padding: clamp(24px, 3vw, 44px); display: flex; flex-direction: column; justify-content: space-between; gap: 32px; border-right: 2px solid var(--cream); }
+  .hero h1 { font-size: clamp(44px, 5.8vw, 84px); }
+  .hero h1 .chip { background: var(--deep); padding: 0 .14em; }
+  .hero p { margin: 0; font-size: clamp(17px, 1.4vw, 20px); line-height: 1.45; font-weight: 500; max-width: 620px; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { height: 52px; padding: 0 24px; display: inline-flex; align-items: center; font-weight: 800; font-stretch: 110%; font-size: 15px; border: 2px solid var(--cream); }
+  .btn.primary { background: var(--cream); color: var(--navy); }
+  .btn.primary:hover { background: #fff; color: var(--navy); }
+  .stage { position: relative; background: var(--deep); min-height: 560px; overflow: hidden; }
+  .stage canvas { position: absolute; top: 0; left: 0; right: 0; bottom: 104px; width: 100%; height: calc(100% - 104px); display: block; }
+  .quote { position: absolute; left: 0; right: 0; bottom: 0; background: var(--navy); border-top: 2px solid var(--cream); font-family: var(--mono); font-size: 13px; line-height: 1.7; padding: 14px 20px; }
+  .quote .row { display: flex; justify-content: space-between; gap: 12px; }
+  .quote .big { font-size: 16px; font-weight: 500; }
+  .dot { width: 8px; height: 8px; background: var(--green); border: 1.5px solid var(--cream); display: inline-block; }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: none; }
+  .stats > div { padding: 24px 26px; display: flex; flex-direction: column; gap: 6px; border-right: 2px solid var(--cream); }
+  .stats > div:last-child { border-right: none; }
+  .stats b { font-size: clamp(30px, 3.4vw, 44px); font-weight: 900; font-stretch: 125%; letter-spacing: -0.03em; }
+  @media (max-width: 1000px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-copy { border-right: none; border-bottom: 2px solid var(--cream); }
+    .stage { min-height: 440px; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stats > div:nth-child(2) { border-right: none; }
+    .stats > div:nth-child(-n+2) { border-bottom: 2px solid var(--cream); }
+  }
+
+  /* problem / fix */
+  .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split > div { padding: clamp(24px, 3vw, 44px); display: flex; flex-direction: column; gap: 26px; }
+  .split > div:first-child { border-right: 2px solid var(--cream); }
+  .split h2 { font-size: clamp(32px, 3.4vw, 48px); line-height: 0.9; }
+  .points { display: flex; flex-direction: column; font-size: 18px; line-height: 1.4; }
+  .points div { display: grid; grid-template-columns: 40px 1fr; padding: 14px 0; border-top: 2px solid var(--cream); }
+  .points div:last-child { border-bottom: 2px solid var(--cream); }
+  .points span:first-child { font-family: var(--mono); font-size: 13px; }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .split > div:first-child { border-right: none; border-bottom: 2px solid var(--cream); } }
+
+  .sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+  .sec-head h2 { font-size: clamp(44px, 5vw, 72px); }
+
+  /* flow table */
+  .flow { font-family: var(--mono); font-size: 15px; overflow-x: auto; }
+  .flow .r { display: grid; grid-template-columns: 70px minmax(260px, 340px) minmax(300px, 1fr) 240px; border-top: 2px solid var(--cream); min-width: 900px; }
+  .flow .r > * { padding: 20px 12px 20px 0; }
+  .flow .r > *:first-child { padding-left: 22px; }
+  .flow .h { background: var(--deep); font-size: 12px; border-top: none; }
+  .flow .h > * { padding-block: 12px; }
+  .flow .n { font-family: Archivo, sans-serif; font-weight: 900; font-stretch: 125%; font-size: 26px; }
+  .flow .holo { display: flex; align-items: center; padding-left: 16px; font-weight: 500; }
+
+  /* code */
+  .code { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .code > div { display: flex; flex-direction: column; min-width: 0; }
+  .code > div:first-child { border-right: 2px solid var(--cream); }
+  .code .top { display: flex; justify-content: space-between; gap: 12px; padding: 14px 22px; border-bottom: 2px solid var(--cream); }
+  .code pre { margin: 0; padding: 24px 22px; font-family: var(--mono); font-size: 14px; line-height: 1.75; overflow-x: auto; }
+  .code .c { color: var(--muted); }
+  @media (max-width: 900px) { .code { grid-template-columns: 1fr; } .code > div:first-child { border-right: none; border-bottom: 2px solid var(--cream); } }
+
+  /* interfaces */
+  .ways { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ways > div { padding: 26px 22px; border-right: 2px solid var(--cream); display: flex; flex-direction: column; gap: 14px; min-height: 260px; }
+  .ways > div:last-child { border-right: none; }
+  .ways b { font-size: 26px; font-weight: 900; font-stretch: 125%; letter-spacing: -0.02em; }
+  .ways p { margin: 0; font-size: 16px; line-height: 1.45; }
+  .ways .mono { margin-top: auto; font-size: 12px; line-height: 1.8; }
+  @media (max-width: 1000px) { .ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ways > div:nth-child(2) { border-right: none; } .ways > div:nth-child(-n+2) { border-bottom: 2px solid var(--cream); } }
+  @media (max-width: 560px) { .ways { grid-template-columns: 1fr; } .ways > div { border-right: none !important; border-bottom: 2px solid var(--cream); } .ways > div:last-child { border-bottom: none; } }
+  .cmd { margin-top: 24px; background: var(--deep); display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 22px; font-family: var(--mono); font-size: 15px; }
+  .cmd code { overflow-x: auto; white-space: nowrap; }
+  .cmd button { font: inherit; font-size: 12px; background: var(--green); color: var(--navy); border: 1.5px solid var(--cream); padding: 6px 10px; cursor: pointer; flex-shrink: 0; }
+
+  /* tokens */
+  .tokens { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); }
+  .tokens > div:first-child { padding: 36px 32px; border-right: 2px solid var(--cream); display: flex; flex-direction: column; gap: 20px; }
+  .tokens h2 { font-size: clamp(36px, 3.4vw, 48px); line-height: 0.9; }
+  .tokens p { margin: 0; font-size: 16px; line-height: 1.45; }
+  .tt { font-family: var(--mono); font-size: 15px; }
+  .tt div { display: grid; grid-template-columns: 110px 1fr 90px; padding: 13px 24px; border-top: 2px solid var(--cream); }
+  .tt .h { background: var(--deep); font-size: 12px; border-top: none; }
+  @media (max-width: 900px) { .tokens { grid-template-columns: 1fr; } .tokens > div:first-child { border-right: none; border-bottom: 2px solid var(--cream); } }
+
+  /* trust */
+  .trust-band { background: var(--deep); padding-block: clamp(56px, 6vw, 90px); }
+  .trust { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .trust > div:first-child { padding: clamp(24px, 3vw, 40px); border-right: 2px solid var(--cream); display: flex; flex-direction: column; gap: 22px; }
+  .trust h2 { font-size: clamp(40px, 4vw, 56px); line-height: 0.88; }
+  .trust p { margin: 0; font-size: 18px; line-height: 1.45; color: #B9C6CF; }
+  .trust ul { list-style: none; margin: 0; padding: 0; font-size: 17px; line-height: 1.4; }
+  .trust li { padding: 20px 28px; border-bottom: 2px solid var(--cream); display: grid; grid-template-columns: 130px 1fr; gap: 12px; }
+  .trust li:last-child { border-bottom: none; }
+  @media (max-width: 900px) { .trust { grid-template-columns: 1fr; } .trust > div:first-child { border-right: none; border-bottom: 2px solid var(--cream); } .trust li { grid-template-columns: 1fr; } }
+
+  /* roadmap */
+  .road { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .road > div { border-right: 2px solid var(--cream); display: flex; flex-direction: column; }
+  .road > div:last-child { border-right: none; }
+  .road .lab { padding: 12px 22px; border-bottom: 2px solid var(--cream); }
+  .road .now { background: var(--green); color: var(--navy); }
+  .road .body { padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; font-size: 17px; line-height: 1.4; }
+  .road b { font-size: 26px; font-weight: 900; font-stretch: 125%; letter-spacing: -0.02em; }
+  @media (max-width: 900px) { .road { grid-template-columns: 1fr; } .road > div { border-right: none; border-bottom: 2px solid var(--cream); } .road > div:last-child { border-bottom: none; } }
+
+  /* marquee + footer */
+  .marquee { margin-top: clamp(64px, 7.6vw, 110px); height: 72px; background: var(--deep); display: flex; align-items: center; overflow: hidden; }
+  .mq { display: flex; width: max-content; animation: mq 30s linear infinite; gap: 32px; font-size: 38px; font-weight: 800; font-stretch: 115%; white-space: nowrap; letter-spacing: -0.01em; }
+  @keyframes mq { to { transform: translateX(-50%); } }
+  footer .in { padding-block: 56px 40px; display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; flex-wrap: wrap; }
+  footer .claim { font-size: clamp(28px, 3vw, 44px); }
+  footer .links { display: grid; grid-template-columns: repeat(2, auto); column-gap: 40px; row-gap: 6px; font-family: var(--mono); font-size: 13px; }
+  .holo-rule { height: 10px; }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="bar">
+    <a class="brand" href="/" aria-label="AgentSwap home">
+      <svg width="28" height="28" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9bd2"/><stop offset=".35" stop-color="#8fd3ff"/><stop offset=".65" stop-color="#8dffd6"/><stop offset="1" stop-color="#f4ff9a"/></linearGradient></defs><path d="M50 0C54 36 64 46 100 50C64 54 54 64 50 100C46 64 36 54 0 50C36 46 46 36 50 0Z" fill="url(#lg)" stroke="#F1EDE6" stroke-width="3"/></svg>
+      AGENTSWAP
+    </a>
+    <nav aria-label="Main">
+      <a class="link" href="#flow">FLOW</a>
+      <a class="link" href="#api">API</a>
+      <a class="link" href="#mcp">MCP</a>
+      <a class="link" href="#tokens">TOKENS</a>
+      <a class="link" href="#roadmap">ROADMAP</a>
+      <a class="gh" href="https://github.com/pu0238/agentswap">GITHUB ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero frame">
+    <div class="hero-copy">
+      <span class="label">Swap API for AI agents · Solana mainnet · x402</span>
+      <h1 class="display">Your agent has USDC. The site wants <span class="chip"><span class="holo-text">BONK.</span></span></h1>
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <p>One HTTP call swaps the token your agent holds for the token a service wants. It pays $0.01 through x402 and gets back an unsigned Jupiter-routed transaction, which it signs with its own key.</p>
+        <div class="btns">
+          <a class="btn primary" href="#api">READ THE API →</a>
+          <a class="btn" href="#mcp">ADD TO CLAUDE</a>
+        </div>
+      </div>
+    </div>
+    <div class="stage">
+      <canvas id="holo" aria-hidden="true"></canvas>
+      <div class="quote" aria-live="polite">
+        <div class="row"><span>LIVE QUOTE</span><span style="display:flex;align-items:center;gap:8px"><span class="dot"></span>MAINNET</span></div>
+        <div class="row big"><span>1 USDC</span><span>→</span><span id="q-out">…</span></div>
+        <div style="color:var(--muted)" id="q-route">route: loading · slippage 50 bps</div>
+      </div>
+    </div>
+  </div>
+  <div class="stats frame">
+    <div><b>$0.01</b><span class="label">Per swap build, paid via x402</span></div>
+    <div><b>0</b><span class="label">Private keys we ever see</span></div>
+    <div><b>2</b><span class="label">HTTP calls from quote to tx</span></div>
+    <div class="deep"><b>0</b><span class="label">Accounts or API keys to sign up for</span></div>
+  </div>
+
+  <section class="split frame">
+    <div>
+      <span class="label">01 · The problem</span>
+      <h2 class="display">Agents can pay. Just not in the right token.</h2>
+      <div class="points">
+        <div><span>A</span><span>x402 lets an agent pay for an HTTP call, but on Solana that means USDC.</span></div>
+        <div><span>B</span><span>Services price in SOL, stables, memecoins and their own tokens.</span></div>
+        <div><span>C</span><span>Swapping today means a DEX UI and a wallet popup. An agent can't click through that.</span></div>
+      </div>
+    </div>
+    <div class="deep">
+      <span class="label">02 · The fix</span>
+      <h2 class="display">A swap that speaks <span class="holo-text">HTTP.</span></h2>
+      <div class="points">
+        <div><span>A</span><span>The price comes as a machine-readable 402, so the agent's x402 client pays it automatically.</span></div>
+        <div><span>B</span><span>Jupiter finds the best route across Solana DEXs.</span></div>
+        <div><span>C</span><span>We return an unsigned transaction. The agent signs it and sends it itself.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="flow">
+    <div class="sec-head">
+      <h2 class="display">One swap,<br>four messages.</h2>
+      <span class="label" style="text-align:right;line-height:1.6">03 · Flow<br>agent ⇄ agentswap ⇄ jupiter ⇄ solana</span>
+    </div>
+    <div class="flow frame">
+      <div class="r h"><span>#</span><span>REQUEST</span><span>RESPONSE</span><span>COST</span></div>
+      <div class="r"><span class="n">1</span><span>GET /api/quote?from=USDC&amp;to=SOL&amp;amount=1</span><span>200 · amount out + route</span><span>free</span></div>
+      <div class="r"><span class="n">2</span><span>POST /api/swap</span><span>402 · PAYMENT-REQUIRED: exact · 10000 (= $0.01 USDC) · fee sponsored</span><span class="holo" style="padding-block:20px"><span>price tag, not paid yet</span></span></div>
+      <div class="r"><span class="n">3</span><span>POST /api/swap + x402 payment</span><span>200 · swapTransaction (base64, unsigned) · lastValidBlockHeight</span><span><span class="tag-green">$0.01 USDC</span></span></div>
+      <div class="r"><span class="n">4</span><span>sign locally → sendTransaction</span><span>tokens land in the agent's wallet · verifiable on Solscan</span><span>network fee (SOL)</span></div>
+    </div>
+  </section>
+
+  <section id="api" class="code frame">
+    <div>
+      <div class="top label"><span>04 · curl</span><span>any language</span></div>
+<pre><span class="c"># 1. free quote</span>
+curl "<span class="origin">$API</span>/api/quote?from=USDC&amp;to=SOL&amp;amount=1"
+
+<span class="c"># 2. build the swap (x402-paid)</span>
+curl -X POST <span class="origin">$API</span>/api/swap \
+  -H 'content-type: application/json' \
+  -d '{"from":"USDC","to":"SOL",
+       "amount":"1",
+       "userPublicKey":"&lt;wallet&gt;"}'
+
+<span class="c"># → 402 until your x402 client pays</span></pre>
+    </div>
+    <div class="deep">
+      <div class="top label"><span>TypeScript agent</span><span>@x402/fetch · @solana/kit</span></div>
+<pre><span class="c">// pays the 402 and retries automatically</span>
+const paidFetch = wrapFetchWithPayment(fetch,
+  new x402Client().register("solana:*",
+    new ExactSvmScheme(signer)));
+
+const { swapTransaction } = await paidFetch(
+  `${API}/api/swap`, { method: "POST", body }
+).then((r) =&gt; r.json());
+
+<span class="c">// your key never leaves the agent</span>
+const signed = await signTransaction(
+  [signer.keyPair], decode(swapTransaction));</pre>
+    </div>
+  </section>
+
+  <section id="mcp">
+    <div class="sec-head">
+      <h2 class="display">Four ways<br>in.</h2>
+      <span class="label">05 · Interfaces</span>
+    </div>
+    <div class="ways frame">
+      <div><b>HTTP API</b><p>For agents that write their own code.</p><span class="mono">GET /api/tokens<br>GET /api/quote<br>POST /api/swap</span></div>
+      <div class="deep"><b>MCP</b><p>For Claude and any other MCP client. No integration code needed.</p><span class="mono">list_tokens<br>get_quote<br>swap_info</span></div>
+      <div><b>SKILL.MD</b><p>A drop-in skill: when to swap, the flow, and a working TS example.</p><a class="mono" href="/skill.md">/skill.md ↗</a></div>
+      <div><b>LLMS.TXT</b><p>So a crawling agent finds the API on its own.</p><a class="mono" href="/llms.txt">/llms.txt ↗</a></div>
+    </div>
+    <div class="cmd frame">
+      <code id="mcp-cmd">claude mcp add --transport http agentswap <span class="origin">$API</span>/mcp</code>
+      <button type="button" id="copy">COPY</button>
+    </div>
+  </section>
+
+  <section id="tokens" class="tokens frame">
+    <div>
+      <span class="label">06 · Supported tokens</span>
+      <h2 class="display">Seven to start.</h2>
+      <p>Use the symbol or the mint. Amounts are in human units, and we convert them with each token's decimals.</p>
+      <div class="bars" style="margin-top:auto;height:40px"></div>
+    </div>
+    <div class="tt">
+      <div class="h"><span>SYMBOL</span><span>MINT</span><span>DECIMALS</span></div>
+      <div><span>SOL</span><span>So111111…11112</span><span>9</span></div>
+      <div><span>USDC</span><span>EPjFWdd5…TDt1v</span><span>6</span></div>
+      <div><span>USDT</span><span>Es9vMFrz…BenwNYB</span><span>6</span></div>
+      <div><span>JUP</span><span>JUPyiwrY…DvCN</span><span>6</span></div>
+      <div><span>BONK</span><span>DezXAZ8z…pPB263</span><span>5</span></div>
+      <div><span>WIF</span><span>EKpQGSJt…65zcjm</span><span>6</span></div>
+      <div><span>PYUSD</span><span>2b1kV6Dk…u24GXo</span><span>6</span></div>
+    </div>
+  </section>
+</main>
+
+<section class="trust-band">
+  <div class="wrap">
+    <div class="trust frame">
+      <div>
+        <span class="label">07 · Trust model</span>
+        <h2 class="display">Non-custodial <span class="holo-text">by design.</span></h2>
+        <p>AgentSwap builds transactions and never signs them. If our server disappeared tomorrow, no agent would lose a cent.</p>
+      </div>
+      <ul>
+        <li><span class="label">Keys</span><span>Never sent to us. The response is an unsigned VersionedTransaction.</span></li>
+        <li><span class="label">Slippage</span><span>Bounded at 1–1000 bps, 50 by default, and enforced on-chain by the route.</span></li>
+        <li><span class="label">Payment</span><span>The x402 fee is settled only when the swap build succeeds. A failed request is never charged.</span></li>
+        <li><span class="label">State</span><span>None. A stateless Cloudflare Worker with no database and no accounts.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap" class="wrap">
+  <div class="sec-head">
+    <h2 class="display">Where this<br>goes.</h2>
+    <span class="label">08 · Roadmap</span>
+  </div>
+  <div class="road frame">
+    <div><div class="lab label now">Now · shipped</div><div class="body"><b>WRAPPER</b><span>Jupiter-routed swaps, x402 pricing, HTTP + MCP, 7 tokens, mainnet.</span></div></div>
+    <div><div class="lab label holo"><span>Next</span></div><div class="body"><b>OWN POOLS</b><span>Liquidity tuned for agent flow: small, frequent, predictable swaps with a tighter spread.</span></div></div>
+    <div><div class="lab label">Later</div><div class="body"><b>ANY TOKEN</b><span>Arbitrary mints, pay-in-any-token for x402 sellers, and more chains.</span></div></div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="mq">
+    <span>QUOTE</span><span class="holo-text">✦</span><span>PAY $0.01</span><span class="holo-text">✦</span><span>SIGN YOURSELF</span><span class="holo-text">✦</span><span>SEND</span><span class="holo-text">✦</span>
+    <span>QUOTE</span><span class="holo-text">✦</span><span>PAY $0.01</span><span class="holo-text">✦</span><span>SIGN YOURSELF</span><span class="holo-text">✦</span><span>SEND</span><span class="holo-text">✦</span>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap in">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <span class="display claim">Let your agent pay with<br>whatever the world accepts.</span>
+      <span class="label">Hackathon proof of concept · Solana mainnet · use small amounts · Forge3 2026</span>
+    </div>
+    <div class="links"><a href="https://github.com/pu0238/agentswap">GITHUB</a><a href="/skill.md">SKILL.MD</a><a href="/llms.txt">LLMS.TXT</a><a href="#mcp">/MCP</a></div>
+  </div>
+  <div class="holo holo-rule"></div>
+</footer>
+
+<script>
+  // Real values only: fill the API origin and the live quote from our own endpoint.
+  const origin = location.origin;
+  document.querySelectorAll(".origin").forEach((el) => (el.textContent = origin));
+  document.getElementById("copy").addEventListener("click", async (e) => {
+    try { await navigator.clipboard.writeText(document.getElementById("mcp-cmd").textContent); e.target.textContent = "COPIED"; }
+    catch { e.target.textContent = "SELECT + COPY"; }
+  });
+  fetch("/api/quote?from=USDC&to=SOL&amount=1")
+    .then((r) => r.json())
+    .then((q) => {
+      if (!q.outAmount) throw new Error("no quote");
+      document.getElementById("q-out").textContent = `${q.outAmount} SOL`;
+      document.getElementById("q-route").textContent = `route: ${q.route.join(" → ")} · slippage 50 bps`;
+    })
+    .catch(() => {
+      document.getElementById("q-out").textContent = "unavailable";
+      document.getElementById("q-route").textContent = "route: quote API unreachable";
+    });
+</script>
+<script type="module">
+  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+  // Holo caltrop: four tetrahedral arms, thin-film iridescence.
+  const VS = `
+    uniform float uTime;
+    varying vec3 vN; varying vec3 vV;
+    float arm(vec3 d, vec3 a){ float c = max(dot(d, normalize(a)), 0.0); return 1.3*pow(c, 12.0); }
+    vec3 shape(vec3 d){
+      d = normalize(d);
+      float r = 0.36 + arm(d, vec3(1.,1.,1.)) + arm(d, vec3(1.,-1.,-1.)) + arm(d, vec3(-1.,1.,-1.)) + arm(d, vec3(-1.,-1.,1.));
+      r += sin(d.x*6.0 + uTime)*0.012 + sin(d.y*5.0 - uTime*0.8)*0.012;
+      return d * r;
+    }
+    void main(){
+      vec3 d = normalize(position);
+      vec3 up = abs(d.y) < 0.99 ? vec3(0.,1.,0.) : vec3(1.,0.,0.);
+      vec3 t = normalize(cross(d, up)); vec3 b = normalize(cross(d, t));
+      vec3 p = shape(d), p1 = shape(d + t*0.006), p2 = shape(d + b*0.006);
+      vec3 n = normalize(cross(p1 - p, p2 - p)); if (dot(n, p) < 0.0) n = -n;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      vN = normalize(normalMatrix * n); vV = normalize(-mv.xyz);
+      gl_Position = projectionMatrix * mv;
+    }`;
+  const FS = `
+    uniform float uTime;
+    varying vec3 vN; varying vec3 vV;
+    vec3 pal(float t){ return 0.5 + 0.5*cos(6.2831*(t + vec3(0.0, 0.33, 0.67))); }
+    void main(){
+      vec3 n = normalize(vN), v = normalize(vV);
+      float f = 1.0 - max(dot(n, v), 0.0);
+      vec3 irid = pal(f*1.5 + n.y*0.4 + n.x*0.3 + uTime*0.06);
+      vec3 l = normalize(vec3(0.4, 0.8, 0.6));
+      float diff = max(dot(n, l), 0.0);
+      float spec = pow(max(dot(reflect(-l, n), v), 0.0), 36.0);
+      vec3 col = irid * (0.55 + 0.55*diff);
+      col = mix(col, vec3(0.0, 0.05, 0.09), (1.0 - f) * 0.28);
+      col += spec * 0.9 + pow(f, 3.0) * 0.3;
+      gl_FragColor = vec4(col, 1.0);
+    }`;
+  const canvas = document.getElementById("holo");
+  try {
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    const scene = new THREE.Scene();
+    const cam = new THREE.PerspectiveCamera(34, 1, 0.1, 50);
+    cam.position.set(0, -0.55, 7.6);
+    const mat = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 } }, vertexShader: VS, fragmentShader: FS });
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 220, 220), mat);
+    scene.add(mesh);
+    let lastW = 0, lastH = 0;
+    const resize = () => {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h || (w === lastW && h === lastH)) return;
+      lastW = w; lastH = h;
+      renderer.setSize(w, h, false); cam.aspect = w / h;
+      // keep all four arms in frame on narrow (portrait) stages
+      cam.position.z = 7.6 * Math.max(1, 0.85 / cam.aspect); cam.updateProjectionMatrix();
+    };
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t0 = performance.now();
+    const loop = () => {
+      const t = still ? 4 : (performance.now() - t0) / 1000; // reduced motion: static pose
+      resize();
+      mat.uniforms.uTime.value = t;
+      mesh.rotation.set(0.6 + t * 0.17, t * 0.29, 0.2 + t * 0.11);
+      renderer.render(scene, cam);
+      requestAnimationFrame(loop);
+    };
+    loop();
+  } catch { canvas.remove(); }
+</script>
+</body>
+</html>

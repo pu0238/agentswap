@@ -7,7 +7,7 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
-    "demo": "tsx demo/agent.ts"
+    "demo": "tsx --env-file-if-exists=.env demo/agent.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.1",

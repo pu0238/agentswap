@@ -1,0 +1,156 @@
+[a] AGENTSWAP
+[a] GITHUB ↗
+[span] Swap API for AI agents · Solana mainnet · x402
+[h1] Your agent has USDC. The site wants
+[span] BONK.
+[p] One HTTP call swaps the token your agent holds for the token a service wants. It pays $0.01 through x402 and gets back an unsigned Jupiter-routed transaction, which it signs with its own key.
+[a] READ THE API →
+[a] ADD TO CLAUDE
+[span] LIVE QUOTE
+[span] MAINNET
+[span] 1 USDC
+[span] 0.008225967 SOL
+[div] route: Quantum · slippage 50 bps
+[b] $0.01
+[span] Per swap build, paid via x402
+[span] Private keys we ever see
+[span] HTTP calls from quote to tx
+[span] Accounts or API keys to sign up for
+[span] 01 · The problem
+[h2] Agents can pay. Just not in the right token.
+[span] x402 lets an agent pay for an HTTP call, but on Solana that means USDC.
+[span] Services price in SOL, stables, memecoins and their own tokens.
+[span] Swapping today means a DEX UI and a wallet popup. An agent can't click through that.
+[span] 02 · The fix
+[h2] A swap that speaks
+[span] HTTP.
+[span] The price comes as a machine-readable 402, so the agent's x402 client pays it automatically.
+[span] Jupiter finds the best route across Solana DEXs.
+[span] We return an unsigned transaction. The agent signs it and sends it itself.
+[h2] One swap,
+[h2] four messages.
+[span] 03 · Flow
+[span] agent ⇄ agentswap ⇄ jupiter ⇄ solana
+[span] REQUEST
+[span] RESPONSE
+[span] COST
+[span] GET /api/quote?from=USDC&to=SOL&amount=1
+[span] 200 · amount out + route
+[span] free
+[span] POST /api/swap
+[span] 402 · PAYMENT-REQUIRED: exact · 10000 (= $0.01 USDC) · fee sponsored
+[span] price tag, not paid yet
+[span] POST /api/swap + x402 payment
+[span] 200 · swapTransaction (base64, unsigned) · lastValidBlockHeight
+[span] $0.01 USDC
+[span] sign locally → sendTransaction
+[span] tokens land in the agent's wallet · verifiable on Solscan
+[span] network fee (SOL)
+[span] 04 · curl
+[span] any language
+[span] # 1. free quote
+[pre] curl "
+[span] http://localhost:8787
+[pre] /api/quote?from=USDC&to=SOL&amount=1"
+[span] # 2. build the swap (x402-paid)
+[pre] curl -X POST
+[span] http://localhost:8787
+[pre] /api/swap \
+  -H 'content-type: application/json' \
+  -d '{"from":"USDC","to":"SOL",
+       "amount":"1",
+       "userPublicKey":"<wallet>"}'
+[span] # → 402 until your x402 client pays
+[span] TypeScript agent
+[span] @x402/fetch · @solana/kit
+[span] // pays the 402 and retries automatically
+[pre] const paidFetch = wrapFetchWithPayment(fetch,
+  new x402Client().register("solana:*",
+    new ExactSvmScheme(signer)));
+
+const { swapTransaction } = await paidFetch(
+  `${API}/api/swap`, { method: "POST", body }
+).then((r) => r.json());
+[span] // your key never leaves the agent
+[pre] const signed = await signTransaction(
+  [signer.keyPair], decode(swapTransaction));
+[h2] Four ways
+[h2] in.
+[span] 05 · Interfaces
+[b] HTTP API
+[p] For agents that write their own code.
+[span] GET /api/tokens
+[span] GET /api/quote
+[span] POST /api/swap
+[b] MCP
+[p] For Claude and any other MCP client. No integration code needed.
+[span] list_tokens
+[span] get_quote
+[span] swap_info
+[b] SKILL.MD
+[p] A drop-in skill: when to swap, the flow, and a working TS example.
+[a] /skill.md ↗
+[b] LLMS.TXT
+[p] So a crawling agent finds the API on its own.
+[a] /llms.txt ↗
+[code] claude mcp add --transport http agentswap
+[span] http://localhost:8787
+[code] /mcp
+[button] COPY
+[span] 06 · Supported tokens
+[h2] Seven to start.
+[p] Use the symbol or the mint. Amounts are in human units, and we convert them with each token's decimals.
+[span] SYMBOL
+[span] MINT
+[span] DECIMALS
+[span] SOL
+[span] So111111…11112
+[span] USDC
+[span] EPjFWdd5…TDt1v
+[span] USDT
+[span] Es9vMFrz…BenwNYB
+[span] JUP
+[span] JUPyiwrY…DvCN
+[span] BONK
+[span] DezXAZ8z…pPB263
+[span] WIF
+[span] EKpQGSJt…65zcjm
+[span] PYUSD
+[span] 2b1kV6Dk…u24GXo
+[span] 07 · Trust model
+[h2] Non-custodial
+[span] by design.
+[p] AgentSwap builds transactions and never signs them. If our server disappeared tomorrow, no agent would lose a cent.
+[span] Keys
+[span] Never sent to us. The response is an unsigned VersionedTransaction.
+[span] Slippage
+[span] Bounded at 1–1000 bps, 50 by default, and enforced on-chain by the route.
+[span] Payment
+[span] The x402 fee is settled only when the swap build succeeds. A failed request is never charged.
+[span] State
+[span] None. A stateless Cloudflare Worker with no database and no accounts.
+[h2] Where this
+[h2] goes.
+[span] 08 · Roadmap
+[div] Now · shipped
+[b] WRAPPER
+[span] Jupiter-routed swaps, x402 pricing, HTTP + MCP, 7 tokens, mainnet.
+[span] Next
+[b] OWN POOLS
+[span] Liquidity tuned for agent flow: small, frequent, predictable swaps with a tighter spread.
+[div] Later
+[b] ANY TOKEN
+[span] Arbitrary mints, pay-in-any-token for x402 sellers, and more chains.
+[span] QUOTE
+[span] PAY $0.01
+[span] SIGN YOURSELF
+[span] SEND
+[span] QUOTE
+[span] PAY $0.01
+[span] SIGN YOURSELF
+[span] SEND
+[span] Let your agent pay with
+[span] whatever the world accepts.
+[span] Hackathon proof of concept · Solana mainnet · use small amounts · Forge3 2026
+[a] SKILL.MD
+[a] LLMS.TXT

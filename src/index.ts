@@ -14,11 +14,25 @@ type Env = {
   SWAP_PRICE: string;
   JUP_API_BASE: string;
   JUP_API_KEY?: string;
+  FREE_LIMITER: RateLimit;
+  SWAP_LIMITER: RateLimit;
 };
 
 const app = new Hono<{ Bindings: Env }>();
 
 app.use("/api/*", cors({ origin: "*", exposeHeaders: ["PAYMENT-REQUIRED", "PAYMENT-RESPONSE"] }));
+
+// Per-IP rate limits (quotes are free, so they're the abuse surface; swap builds hit Jupiter twice).
+const limited = (pick: (e: Env) => RateLimit): MiddlewareHandler<{ Bindings: Env }> => async (c, next) => {
+  const ip = c.req.header("cf-connecting-ip") ?? "unknown";
+  const { success } = await pick(c.env).limit({ key: ip });
+  if (!success) return c.json({ error: "rate_limited", detail: "Too many requests, retry in a minute." }, 429, { "Retry-After": "60" });
+  await next();
+};
+app.use("/api/quote", limited((e) => e.FREE_LIMITER));
+app.use("/api/tokens", limited((e) => e.FREE_LIMITER));
+app.use("/mcp", limited((e) => e.FREE_LIMITER));
+app.use("/api/swap", limited((e) => e.SWAP_LIMITER));
 
 app.onError((err, c) => {
   const status = err instanceof UpstreamError ? 502 : 400;

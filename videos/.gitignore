@@ -1,0 +1,9 @@
+# generated / third-party media: regenerate with the HyperFrames pipeline (audio.mjs, render)
+*/renders/
+*/snapshots/
+*/.keep/
+*/.hyperframes/voice-orig/
+*/assets/bgm/
+*/assets/sfx/
+*/assets/voice/
+node_modules/

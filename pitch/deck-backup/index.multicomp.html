@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>AgentSwap pitch deck</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+  @font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("fonts/archivo-latin-wdth-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("fonts/geist-mono-500.woff2") format("woff2"); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: #DCD3C6; }
+  .slide { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #DCD3C6; color: #121212; font-family: "Archivo", system-ui, sans-serif; }
+  .clip { position: absolute; inset: 0; }
+  .in { position: absolute; inset: 88px 120px 96px; display: flex; flex-direction: column; }
+  .chrome { position: absolute; left: 120px; right: 120px; top: 40px; display: flex; justify-content: space-between; font-family: "Geist Mono", monospace; font-size: 24px; text-transform: uppercase; color: #6E685F; }
+  .disp { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: 0.88; text-transform: uppercase; }
+  .h { font-size: 88px; }
+  .body { font-size: 44px; line-height: 1.3; font-weight: 500; }
+  .mono { font-family: "Geist Mono", monospace; }
+  .muted { color: #6E685F; }
+  .deep .muted { color: #9A9287; }
+  .frame { border: 3px solid #121212; }
+  .deep { background: #121212; color: #DCD3C6; }
+  .green { background: #14F195; color: #121212; }
+  .holo { background-image: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); background-size: 300% 300%; background-position: 0% 50%; color: #121212; }
+  .holo-text { background-image: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f,#ff9bd2); background-size: 250% 100%; background-position: 0% 50%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .bars { background: repeating-linear-gradient(90deg,#121212 0 3px,transparent 3px 6px,#121212 6px 8px,transparent 8px 14px,#121212 14px 20px,transparent 20px 22px,#121212 22px 24px,transparent 24px 30px); }
+  .row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cell { padding: 36px 36px 40px; display: flex; flex-direction: column; gap: 18px; }
+  .cell + .cell { border-left: 2px solid currentColor; }
+  .k { font-family: "Geist Mono", monospace; font-size: 28px; text-transform: uppercase; }
+  .t { font-size: 52px; font-weight: 900; font-stretch: 125%; letter-spacing: -0.03em; text-transform: uppercase; line-height: 0.95; }
+  .p { font-size: 40px; line-height: 1.3; font-weight: 500; }
+  canvas.cal { position: absolute; display: block; }
+  .prog { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: #121212; }
+  .prog i { display: block; height: 100%; }
+</style>
+</head>
+<body style="margin: 0">
+<script type="application/hyperframes-slideshow+json">
+{
+  "slides": [
+    { "sceneId": "title", "startTime": 0, "endTime": 6, "notes": "Hi, I'm Michał from Forge3. This is AgentSwap: a swap button for AI agents. One sentence: your agent has USDC, the site wants something else, and we fix that in one API call on Solana." },
+    { "sceneId": "problem", "startTime": 6, "endTime": 12, "fragments": [8.2, 9.4, 10.6], "notes": "x402 turned agents into paying customers, and on Solana that means USDC. But services price in everything else. Today the fix is a human with a DEX and a wallet popup, and an agent can't click. [VERIFY before recording: add the current count of x402 payments on Solana from an explorer or facilitator stats, if you want a number here.]" },
+    { "sceneId": "solution", "startTime": 12, "endTime": 18, "fragments": [14.2, 15.4, 16.6], "notes": "One HTTP call turns the token you have into the token you need. Priced per call through x402 with no accounts, routed through Jupiter across every major Solana DEX, and non-custodial: we return an unsigned transaction and the agent signs it." },
+    { "sceneId": "demo", "startTime": 18, "endTime": 24, "fragments": [20.0, 21.0, 22.0, 23.0], "notes": "Walk the four messages. 1: free quote. 2: POST /swap answers 402 with a machine-readable price. 3: the agent's x402 client pays one cent and gets an unsigned tx. 4: sign locally, send, and it's on Solscan. The 402 is the magic moment: the agent pays and continues on its own. Real run: the agent paid $0.01 and swapped 1 USDC for 0.008186967 SOL. The swap tx 2SpRNZCS…BopWMx is finalized on Solscan." },
+    { "sceneId": "market", "startTime": 24, "endTime": 30, "notes": "We don't quote a TAM we can't source. The model is bottom-up: agent payments per month, times the share that needs a swap first, times one cent now and a pool spread later. Why now: x402 v2 ships Solana support with sponsored fees, MCP made tools for agents a distribution channel, and Jupiter made routing a commodity. [VERIFY: plug in real payment volume if you have it.]" },
+    { "sceneId": "traction", "startTime": 30, "endTime": 36, "fragments": [32.2, 33.0, 33.8, 34.6], "notes": "Honest traction: built and working during the hackathon. API, MCP server, landing page, skill.md and llms.txt. Live Jupiter quotes, and the 402 challenge verified against a mainnet facilitator. Zero users and zero revenue: this is day zero. First real paid swap: 1 USDC to 0.008186967 SOL on mainnet, one-cent fee via x402, both transactions finalized. Swap: solscan.io/tx/2SpRNZCS6Gw3UeEpjGGaummpkxEJYfYrXCLyncwkooQCWT4kHUKNDyrbX3MBUjUirTmduHZAdAeW2u8jKgBopWMx" },
+    { "sceneId": "model", "startTime": 36, "endTime": 42, "notes": "Phase one is a toll: one cent per swap build via x402, and the facilitator fee is the main cost. Phase two is our own pools tuned for agent flow, earning an LP spread. Acquisition cost is near zero: agents find us through MCP registries, llms.txt and x402 directories. [VERIFY the facilitator fee before quoting a margin.]" },
+    { "sceneId": "competition", "startTime": 42, "endTime": 48, "notes": "Two axes: agent-native versus human UI, and non-custodial versus custodial. DEX UIs are non-custodial but built for humans. Custodial agent wallets are agent-friendly but hold your money. We're the only box that's both. Being a wrapper is not a moat. The moat is owned liquidity plus agent-flow data, and we say that openly." },
+    { "sceneId": "gtm", "startTime": 48, "endTime": 54, "notes": "Distribution happens where agents already look for tools: MCP registries, x402 service directories, and agent frameworks like Claude, ElizaOS and Solana Agent Kit. Plus x402 sellers: 'accept any token' via AgentSwap." },
+    { "sceneId": "team", "startTime": 54, "endTime": 60, "notes": "Michał Łustyk, Forge3. We ship Solana infrastructure fast, and we built this end to end during the hackathon. [ADD before recording: 2–3 concrete things you've shipped before.]" },
+    { "sceneId": "ask", "startTime": 60, "endTime": 66, "fragments": [62.2, 63.2, 64.2], "notes": "What we're asking for: feedback from x402 and agent-framework builders, intros to agent teams paying on Solana today, and grant or prize money for the first pool. Milestones: 100 agent swaps on mainnet, then our first own pool, then a second chain." },
+    { "sceneId": "close", "startTime": 66, "endTime": 72, "notes": "Let your agent pay with whatever the world accepts. One cent per swap, zero keys shared. The code is at github.com/pu0238/agentswap. Thank you." }
+  ],
+  "slideSequences": []
+}
+</script>
+
+<!-- 01 · title -->
+<div id="slide-title" data-composition-id="title" data-start="0" data-duration="6" data-label="Title" data-width="1920" data-height="1080" class="slide">
+  <section id="body-title" class="clip" data-start="0" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>AgentSwap · Hackathon 2026</span><span>01 / 12</span></div>
+    <div class="frame deep" style="position:absolute;right:120px;top:120px;width:720px;height:820px">
+      <canvas id="cal-title" class="cal" width="716" height="816" style="left:0;top:0;width:716px;height:816px"></canvas>
+      <div class="green mono" style="position:absolute;left:0;right:0;bottom:0;padding:18px 24px;font-size:28px;border-top:2px solid currentColor">X402 ✦ JUPITER ✦ MCP ✦ NON-CUSTODIAL</div>
+    </div>
+    <div class="in" style="right:900px;top:140px;justify-content:space-between">
+      <div class="disp rv" data-at="0.2" style="font-size:132px">A swap button for <span style="background:#121212;padding:0 .12em;-webkit-box-decoration-break:clone;box-decoration-break:clone"><span class="holo-text">AI agents.</span></span></div>
+      <div style="display:flex;flex-direction:column;gap:36px">
+        <div class="body rv" data-at="0.8">Your agent has USDC. The site wants something else. We fix that in one API call on Solana.</div>
+        <div class="rv" data-at="1.2" style="display:flex;justify-content:space-between;align-items:flex-end;border-top:2px solid currentColor;padding-top:24px">
+          <div class="body" style="font-size:40px"><b style="font-weight:800">Michał Łustyk</b> · Forge3</div>
+          <div class="bars" style="width:240px;height:52px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 02 · problem -->
+<div id="slide-problem" data-composition-id="problem" data-start="6" data-duration="6" data-label="Problem" data-width="1920" data-height="1080" class="slide">
+  <section id="body-problem" class="clip" data-start="6" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>02 · The problem</span><span>02 / 12</span></div>
+    <div class="in" style="gap:56px">
+      <div class="disp h rv" data-at="6.2">Agents can pay now, but only in the token they happen to hold.</div>
+      <div class="frame row3" style="margin-top:auto">
+        <div class="cell rv" data-at="8.2"><span class="k muted">A · x402</span><span class="p">x402 lets agents pay per call. On Solana that means USDC.</span></div>
+        <div class="cell rv" data-at="9.4"><span class="k muted">B · checkout</span><span class="p">Services price in SOL, stables, memecoins and their own tokens.</span></div>
+        <div class="cell deep rv" data-at="10.6"><span class="k muted">C · the fix today</span><span class="p">A DEX UI and a wallet popup. <span class="holo-text" style="font-weight:800">An agent can't click.</span></span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 03 · solution -->
+<div id="slide-solution" data-composition-id="solution" data-start="12" data-duration="6" data-label="Solution" data-width="1920" data-height="1080" class="slide">
+  <section id="body-solution" class="clip" data-start="12" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>03 · Solution</span><span>03 / 12</span></div>
+    <div class="in" style="gap:56px">
+      <div class="disp h rv" data-at="12.2">One HTTP call turns the token you have into the token you need.</div>
+      <div class="frame row3" style="margin-top:auto">
+        <div class="cell rv" data-at="14.2"><span class="k muted">Priced per call</span><span class="t">$0.01 via x402</span><span class="p">No accounts, no API keys. The 402 is the price tag.</span></div>
+        <div class="cell rv" data-at="15.4"><span class="k muted">Best route</span><span class="t">Jupiter</span><span class="p">Every major Solana DEX, in one quote.</span></div>
+        <div class="cell deep rv" data-at="16.6"><span class="k muted">Non-custodial</span><span class="t"><span class="holo-text">You sign.</span></span><span class="p">We return an unsigned transaction and never see a key.</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 04 · demo -->
+<div id="slide-demo" data-composition-id="demo" data-start="18" data-duration="6" data-label="Demo" data-width="1920" data-height="1080" class="slide">
+  <section id="body-demo" class="clip" data-start="18" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>04 · Demo</span><span>04 / 12</span></div>
+    <div class="in" style="gap:44px">
+      <div class="disp rv" data-at="18.2" style="font-size:80px">A real agent buys a token on mainnet, with no human in the loop.</div>
+      <div class="frame mono" style="font-size:34px;margin-top:auto">
+        <div class="rv" data-at="20.0" style="display:grid;grid-template-columns:90px 560px 1fr 300px;padding:22px 0;align-items:baseline"><span class="disp" style="font-size:44px;padding-left:24px">1</span><span>GET /api/quote</span><span>200 · amount + route</span><span>free</span></div>
+        <div class="rv" data-at="21.0" style="display:grid;grid-template-columns:90px 560px 1fr 300px;border-top:2px solid currentColor;align-items:stretch"><span class="disp" style="font-size:44px;padding:22px 0 22px 24px">2</span><span style="padding:22px 0">POST /api/swap</span><span style="padding:22px 0">402 · price $0.01 USDC</span><span class="holo" style="padding:22px 20px">price tag</span></div>
+        <div class="rv" data-at="22.0" style="display:grid;grid-template-columns:90px 560px 1fr 300px;padding:22px 0;border-top:2px solid currentColor;align-items:baseline"><span class="disp" style="font-size:44px;padding-left:24px">3</span><span>+ x402 payment</span><span>200 · unsigned tx</span><span><span class="green" style="padding:2px 12px">$0.01</span></span></div>
+        <div class="rv" data-at="23.0" style="display:grid;grid-template-columns:90px 560px 1fr 300px;padding:22px 0;border-top:2px solid currentColor;align-items:baseline"><span class="disp" style="font-size:44px;padding-left:24px">4</span><span>sign locally → send</span><span>on-chain · Solscan ✓</span><span>SOL fee</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 05 · market -->
+<div id="slide-market" data-composition-id="market" data-start="24" data-duration="6" data-label="Market" data-width="1920" data-height="1080" class="slide">
+  <section id="body-market" class="clip" data-start="24" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>05 · Market · bottom-up</span><span>05 / 12</span></div>
+    <div class="in" style="gap:56px">
+      <div class="disp h rv" data-at="24.2">Every agent payment in the wrong token is a swap.</div>
+      <div class="frame deep rv" data-at="25.0" style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;padding:44px 40px;gap:24px">
+        <span class="t" style="font-size:48px">Agent payments / month</span><span class="disp muted" style="font-size:64px">×</span>
+        <span class="t" style="font-size:48px">Share that needs a swap</span><span class="disp muted" style="font-size:64px">×</span>
+        <span class="t" style="font-size:48px"><span class="green" style="padding:0 10px">$0.01</span> now + pool spread later</span>
+      </div>
+      <div class="rv" data-at="26.0" style="margin-top:auto;display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:baseline">
+        <span class="k muted">Why now</span>
+        <span class="p">x402 v2 SDKs support Solana with sponsored fees · MCP turned tools for agents into a channel · Jupiter made routing a commodity.</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 06 · traction -->
+<div id="slide-traction" data-composition-id="traction" data-start="30" data-duration="6" data-label="Traction" data-width="1920" data-height="1080" class="slide">
+  <section id="body-traction" class="clip" data-start="30" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>06 · Traction · day 0</span><span>06 / 12</span></div>
+    <div class="in" style="gap:48px">
+      <div class="disp h rv" data-at="30.2">Built and working on mainnet in one hackathon.</div>
+      <div class="frame" style="margin-top:auto;font-size:44px;font-weight:500">
+        <div class="rv" data-at="32.2" style="display:flex;justify-content:space-between;padding:22px 32px"><span>HTTP API + MCP server + landing + skill.md + llms.txt</span><span class="green mono" style="padding:0 14px">✓</span></div>
+        <div class="rv" data-at="33.0" style="display:flex;justify-content:space-between;padding:22px 32px;border-top:2px solid currentColor"><span>Live Jupiter quotes on mainnet</span><span class="green mono" style="padding:0 14px">✓</span></div>
+        <div class="rv" data-at="33.8" style="display:flex;justify-content:space-between;padding:22px 32px;border-top:2px solid currentColor"><span>First paid mainnet swap: 1 USDC → 0.008186967 SOL, $0.01 via x402</span><span class="green mono" style="padding:0 14px">✓</span></div>
+        <div class="rv deep" data-at="34.6" style="display:flex;justify-content:space-between;padding:22px 32px;border-top:2px solid currentColor"><span>0 users · $0 revenue · this is day zero</span><span class="mono muted">honest</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 07 · business model -->
+<div id="slide-model" data-composition-id="model" data-start="36" data-duration="6" data-label="Business model" data-width="1920" data-height="1080" class="slide">
+  <section id="body-model" class="clip" data-start="36" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>07 · Business model</span><span>07 / 12</span></div>
+    <div class="in" style="gap:56px">
+      <div class="disp h rv" data-at="36.2">A toll per call today, and a spread on our own liquidity tomorrow.</div>
+      <div class="frame" style="margin-top:auto;display:grid;grid-template-columns:1fr 1fr">
+        <div class="cell rv" data-at="37.2"><span class="k" style="align-self:flex-start;background:#14F195;color:#012136;padding:4px 12px">Phase 1 · now</span><span class="t">Toll</span><span class="p">$0.01 per swap build via x402. The facilitator fee is the main cost.</span></div>
+        <div class="cell deep rv" data-at="38.2"><span class="k holo" style="align-self:flex-start;padding:4px 12px">Phase 2 · next</span><span class="t"><span class="holo-text">Liquidity</span></span><span class="p">Our own pools tuned for agent flow, earning an LP spread.</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 08 · competition -->
+<div id="slide-competition" data-composition-id="competition" data-start="42" data-duration="6" data-label="Competition" data-width="1920" data-height="1080" class="slide">
+  <section id="body-competition" class="clip" data-start="42" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>08 · Competition</span><span>08 / 12</span></div>
+    <div class="in" style="flex-direction:row;gap:64px;align-items:stretch">
+      <div class="disp rv" data-at="42.2" style="font-size:84px;width:660px;align-self:center">DEXs are built for humans. We're built for agents.</div>
+      <div class="rv" data-at="43.0" style="flex-grow:1;position:relative">
+        <div class="frame" style="position:absolute;inset:0 0 60px 60px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr">
+          <div class="cell" style="border-right:2px solid currentColor;border-bottom:2px solid currentColor"><span class="p muted">DEX UIs &amp; aggregator frontends</span></div>
+          <div class="cell holo" style="border-bottom:2px solid currentColor;justify-content:center"><span class="t">AgentSwap</span><span class="k">agent-native + non-custodial</span></div>
+          <div class="cell" style="border-right:2px solid currentColor"><span class="p muted">Centralized exchanges</span></div>
+          <div class="cell"><span class="p muted">Custodial agent wallets</span></div>
+        </div>
+        <span class="k" style="position:absolute;left:60px;right:0;bottom:0;display:flex;justify-content:space-between"><span>Human UI</span><span>Agent-native →</span></span>
+        <span class="k" style="position:absolute;left:0;top:0;bottom:60px;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;justify-content:space-between"><span>Custodial</span><span>Non-custodial →</span></span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 09 · go-to-market -->
+<div id="slide-gtm" data-composition-id="gtm" data-start="48" data-duration="6" data-label="Go-to-market" data-width="1920" data-height="1080" class="slide">
+  <section id="body-gtm" class="clip" data-start="48" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>09 · Go-to-market</span><span>09 / 12</span></div>
+    <div class="in" style="gap:56px">
+      <div class="disp h rv" data-at="48.2">Distribution happens where agents already look for tools.</div>
+      <div class="frame row3" style="margin-top:auto">
+        <div class="cell rv" data-at="49.2"><span class="t">Registries</span><span class="p">MCP registries and x402 service directories.</span></div>
+        <div class="cell rv" data-at="50.0"><span class="t">Frameworks</span><span class="p">Skills and plugins for Claude, ElizaOS, Solana Agent Kit.</span></div>
+        <div class="cell deep rv" data-at="50.8"><span class="t"><span class="holo-text">Sellers</span></span><span class="p">x402 sellers: accept any token, via AgentSwap.</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 10 · team -->
+<div id="slide-team" data-composition-id="team" data-start="54" data-duration="6" data-label="Team" data-width="1920" data-height="1080" class="slide">
+  <section id="body-team" class="clip" data-start="54" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>10 · Team</span><span>10 / 12</span></div>
+    <div class="in" style="gap:56px">
+      <div class="disp h rv" data-at="54.2">A team that ships Solana infrastructure fast.</div>
+      <div class="frame rv" data-at="55.2" style="margin-top:auto;display:grid;grid-template-columns:auto 1fr">
+        <div class="deep" style="padding:40px 48px;border-right:2px solid currentColor;display:flex;flex-direction:column;gap:12px;justify-content:center"><span class="t">Michał Łustyk</span><span class="k muted">Forge3</span></div>
+        <div class="cell" style="justify-content:center"><span class="p">Built AgentSwap end to end during the hackathon: API, x402 paywall, MCP server, landing page and demo agent.</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 11 · ask -->
+<div id="slide-ask" data-composition-id="ask" data-start="60" data-duration="6" data-label="The ask" data-width="1920" data-height="1080" class="slide">
+  <section id="body-ask" class="clip" data-start="60" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>11 · The ask</span><span>11 / 12</span></div>
+    <div class="in" style="gap:48px">
+      <div class="disp h rv" data-at="60.2">Help us go from wrapper to liquidity.</div>
+      <div class="p rv" data-at="61.0">Feedback from x402 builders · intros to agent teams paying on Solana · grant or prize money for the first pool.</div>
+      <div class="frame row3" style="margin-top:auto">
+        <div class="cell rv" data-at="62.2"><span class="k muted">Milestone 1</span><span class="t">100 agent swaps</span><span class="p">on mainnet</span></div>
+        <div class="cell rv" data-at="63.2"><span class="k muted">Milestone 2</span><span class="t">First own pool</span><span class="p">tuned for agent flow</span></div>
+        <div class="cell deep rv" data-at="64.2"><span class="k muted">Milestone 3</span><span class="t"><span class="holo-text">Second chain</span></span><span class="p">beyond Solana</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 12 · close -->
+<div id="slide-close" data-composition-id="close" data-start="66" data-duration="6" data-label="Close" data-width="1920" data-height="1080" class="slide">
+  <section id="body-close" class="clip" data-start="66" data-duration="6" data-track-index="1">
+    <div class="chrome"><span>AgentSwap</span><span>12 / 12</span></div>
+    <div class="frame deep" style="position:absolute;right:120px;top:120px;width:620px;height:760px">
+      <canvas id="cal-close" class="cal" width="616" height="756" style="left:0;top:0;width:616px;height:756px"></canvas>
+    </div>
+    <div class="in" style="right:800px;top:140px;justify-content:space-between">
+      <div class="disp rv" data-at="66.2" style="font-size:104px">Let your agent pay with <span style="background:#121212;padding:0 .12em;-webkit-box-decoration-break:clone;box-decoration-break:clone"><span class="holo-text">whatever the world accepts.</span></span></div>
+      <div class="rv" data-at="67.0" style="display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;gap:20px;align-items:center"><span class="green disp" style="font-size:56px;padding:6px 16px">$0.01</span><span class="disp" style="font-size:56px">· 0 keys shared</span></div>
+        <div class="mono" style="font-size:36px;border-top:2px solid currentColor;padding-top:20px">github.com/pu0238/agentswap</div>
+        <div class="mono muted" style="font-size:32px">michal.lustyk@forge-3.com</div>
+      </div>
+    </div>
+    <div class="prog"><i class="holo" style="width:100%"></i></div>
+  </section>
+</div>
+
+<script>
+  // present mode loads the composition without the runtime registry, so create it if missing
+  window.__timelines = window.__timelines || {};
+  // One paused timeline per slide composition. Reveals and holo shimmer sit at absolute times.
+  document.querySelectorAll("[data-composition-id]").forEach((scene) => {
+    const id = scene.dataset.compositionId;
+    const start = parseFloat(scene.dataset.start);
+    const dur = parseFloat(scene.dataset.duration);
+    const tl = gsap.timeline({ paused: true });
+    scene.querySelectorAll(".rv").forEach((el) => {
+      tl.fromTo(el, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, parseFloat(el.dataset.at));
+    });
+    scene.querySelectorAll(".holo, .holo-text").forEach((el) => {
+      tl.fromTo(el, { backgroundPosition: "0% 50%" }, { backgroundPosition: "100% 50%", duration: dur, ease: "none" }, start);
+    });
+    window.__timelines[id] = tl;
+  });
+</script>
+<script>
+  // Scene map for <hyperframes-slideshow>: present mode does not inject it for multi-scene decks.
+  (function () {
+    var scenes = [{"id": "title", "start": 0.0, "duration": 6.0}, {"id": "problem", "start": 6.0, "duration": 6.0}, {"id": "solution", "start": 12.0, "duration": 6.0}, {"id": "demo", "start": 18.0, "duration": 6.0}, {"id": "market", "start": 24.0, "duration": 6.0}, {"id": "traction", "start": 30.0, "duration": 6.0}, {"id": "model", "start": 36.0, "duration": 6.0}, {"id": "competition", "start": 42.0, "duration": 6.0}, {"id": "gtm", "start": 48.0, "duration": 6.0}, {"id": "team", "start": 54.0, "duration": 6.0}, {"id": "ask", "start": 60.0, "duration": 6.0}, {"id": "close", "start": 66.0, "duration": 6.0}];
+    function post() { parent.postMessage({ source: "hf-preview", type: "timeline", durationInFrames: 2160, scenes: scenes }, "*"); }
+    if (document.readyState === "complete") setTimeout(post, 300); else window.addEventListener("load", function () { setTimeout(post, 300); });
+  })();
+</script>
+<script type="module">
+  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.181.2/+esm";
+  // Holo caltrop: four tetrahedral arms with a thin-film shader, rendered from HyperFrames time.
+  const VS = `
+    uniform float uTime; uniform float uShape;
+    varying vec3 vN; varying vec3 vV;
+    float arm(vec3 d, vec3 a){
+      float c = max(dot(d, normalize(a)), 0.0);
+      return mix(1.3*pow(c, 12.0), 1.05*smoothstep(0.72, 0.96, c) + 0.35*pow(c, 3.0), uShape);
+    }
+    vec3 shape(vec3 d){
+      d = normalize(d);
+      float r = mix(0.36, 0.42, uShape) + arm(d, vec3(1.,1.,1.)) + arm(d, vec3(1.,-1.,-1.)) + arm(d, vec3(-1.,1.,-1.)) + arm(d, vec3(-1.,-1.,1.));
+      r += sin(d.x*6.0 + uTime)*0.012 + sin(d.y*5.0 - uTime*0.8)*0.012;
+      return d * r;
+    }
+    void main(){
+      vec3 d = normalize(position);
+      vec3 up = abs(d.y) < 0.99 ? vec3(0.,1.,0.) : vec3(1.,0.,0.);
+      vec3 t = normalize(cross(d, up)); vec3 b = normalize(cross(d, t));
+      vec3 p = shape(d), p1 = shape(d + t*0.006), p2 = shape(d + b*0.006);
+      vec3 n = normalize(cross(p1 - p, p2 - p)); if (dot(n, p) < 0.0) n = -n;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      vN = normalize(normalMatrix * n); vV = normalize(-mv.xyz);
+      gl_Position = projectionMatrix * mv;
+    }`;
+  const FS = `
+    uniform float uTime;
+    varying vec3 vN; varying vec3 vV;
+    vec3 pal(float t){ return 0.5 + 0.5*cos(6.2831*(t + vec3(0.0, 0.33, 0.67))); }
+    void main(){
+      vec3 n = normalize(vN), v = normalize(vV);
+      float f = 1.0 - max(dot(n, v), 0.0);
+      vec3 irid = pal(f*1.5 + n.y*0.4 + n.x*0.3 + uTime*0.06);
+      vec3 l = normalize(vec3(0.4, 0.8, 0.6));
+      float spec = pow(max(dot(reflect(-l, n), v), 0.0), 36.0);
+      vec3 col = irid * (0.55 + 0.55*max(dot(n, l), 0.0));
+      col = mix(col, vec3(0.06, 0.06, 0.06), (1.0 - f) * 0.28);
+      col += spec * 0.9 + pow(f, 3.0) * 0.3;
+      gl_FragColor = vec4(col, 1.0);
+    }`;
+  const views = [["cal-title", 0.0], ["cal-close", 1.0]].map(([id, shape]) => {
+    const canvas = document.getElementById(id);
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(1);
+    renderer.setSize(canvas.width, canvas.height, false);
+    const scene = new THREE.Scene();
+    const cam = new THREE.PerspectiveCamera(34, canvas.width / canvas.height, 0.1, 50);
+    cam.position.set(0, 0, 7.6 * Math.max(1, 0.85 / (canvas.width / canvas.height)));
+    const mat = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uShape: { value: shape } }, vertexShader: VS, fragmentShader: FS });
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 220, 220), mat);
+    scene.add(mesh);
+    return { renderer, scene, cam, mat, mesh };
+  });
+  function renderAt(time) {
+    for (const v of views) {
+      v.mat.uniforms.uTime.value = time;
+      v.mesh.rotation.set(0.6 + time * 0.17, time * 0.29, 0.2 + time * 0.11);
+      v.renderer.render(v.scene, v.cam);
+    }
+  }
+  window.addEventListener("hf-seek", (e) => renderAt(e.detail.time));
+  renderAt(window.__hfThreeTime || 0);
+</script>
+</body>
+</html>

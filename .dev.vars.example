@@ -1,0 +1,16 @@
+# ── Worker (src/index.ts) ─ copy to .dev.vars for `wrangler dev` ───────────
+# These override the defaults in wrangler.jsonc. For production use
+# `wrangler secret put <NAME>` or edit the vars in wrangler.jsonc.
+
+# REQUIRED: your Solana address that receives the $0.01 USDC x402 fee.
+# Must be a DIFFERENT wallet than AGENT_SECRET_KEY, or the fee transfer is pointless.
+PAY_TO=F7EU9U5X66S4xPEE6FSeaNcJdDmDSVCWwX8eycy6mdNQ
+
+# Optional overrides (defaults shown)
+# X402_NETWORK=solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp
+# FACILITATOR_URL=https://facilitator.payai.network
+# SWAP_PRICE=$0.01
+# JUP_API_BASE=https://lite-api.jup.ag/swap/v1
+
+# Optional: Jupiter Pro key (then set JUP_API_BASE=https://api.jup.ag/swap/v1)
+# JUP_API_KEY=

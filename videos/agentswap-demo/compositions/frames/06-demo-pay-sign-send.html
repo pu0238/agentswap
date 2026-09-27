@@ -1,0 +1,64 @@
+<template>
+<div id="root" data-composition-id="06-demo-pay-sign-send" data-width="1920" data-height="1080" data-duration="9.399">
+  <style>
+  @font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("assets/fonts/archivo-latin-wdth-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("assets/fonts/geist-mono-500.woff2") format("woff2"); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Archivo", sans-serif; color: #121212; }
+  .f06-bg { position: absolute; inset: 0; background: #DCD3C6; }
+  .f06-stage { position: absolute; inset: 0; }
+  .f06-disp { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: 0.88; text-transform: uppercase; }
+  .f06-mono { font-family: "Geist Mono", monospace; text-transform: uppercase; }
+  .f06-muted { color: #6E685F; }
+  .f06-deep .f06-muted { color: #9A9287; }
+  .f06-frame { border: 3px solid #121212; }
+  .f06-deep { background: #121212; color: #DCD3C6; }
+  .f06-green { background: #14F195; color: #121212; }
+  .f06-holo { background-image: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); background-size: 300% 300%; background-position: 0% 50%; color: #012136; }
+  .f06-htext { background-image: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f,#ff9bd2); background-size: 250% 100%; background-position: 0% 50%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .f06-tag { position: absolute; left: 120px; top: 56px; font-family: "Geist Mono", monospace; font-size: 26px; text-transform: uppercase; border: 3px solid #121212; padding: 12px 18px; line-height: 1; }
+  .f06-count { position: absolute; right: 120px; top: 64px; font-family: "Geist Mono", monospace; font-size: 26px; color: #121212; }
+  .f06-bars { position: absolute; right: 250px; top: 58px; width: 150px; height: 34px; background: repeating-linear-gradient(90deg,#121212 0 2px,transparent 2px 4px,#121212 4px 5px,transparent 5px 9px,#121212 9px 13px,transparent 13px 14px,#121212 14px 15px,transparent 15px 19px,#121212 19px 20px,transparent 20px 23px); }
+  .f06-track { position: absolute; left: 120px; right: 120px; top: 876px; height: 10px; background: #121212; overflow: hidden; }
+  .f06-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: 0 50%; }
+  .f06-term { font-family: "Geist Mono", monospace; white-space: pre; }
+</style>
+  <div class="clip f06-bg" data-start="0" data-duration="9.399" data-track-index="0"></div>
+  <div class="clip f06-stage" data-p="f06" data-start="0" data-duration="9.399" data-track-index="1">
+    <div id="f06-tag" class="f06-tag">agent wallet · USDC → SOL</div>
+    <span class="f06-bars"></span><div class="f06-count">06 / 10</div>
+    <div class="f06-track"><div id="f06-fill" class="f06-fill f06-holo"></div></div>
+    <div class="f06-frame f06-deep" style="position:absolute;left:120px;right:120px;top:150px;height:700px"><div class="f06-mono f06-muted" style="font-size:26px;padding:18px 28px;border-bottom:3px solid currentColor">terminal · agent run · solana mainnet</div>
+      <div class="f06-term" style="padding:30px 40px;font-size:40px;line-height:1.7">
+<span class="f06-muted">▸ Quote 0.008186968 SOL · 402 · $0.01 USDC</span>
+<span id="f06-r1" style="display:inline-block"><span style="color:#14F195">✓</span> x402 fee paid     <span class="f06-muted">tx 3Vw7GZn4…c6f4e</span></span>
+<span id="f06-r2" style="display:inline-block"><span style="color:#14F195">✓</span> unsigned tx received</span>
+<span id="f06-r3" style="display:inline-block"><span style="color:#14F195">✓</span> signed locally     <span class="f06-muted">own key, never sent</span></span>
+<span id="f06-r4" style="display:inline-block"><span style="color:#14F195">✓</span> swap sent          <span class="f06-muted">tx 2SpRNZCS…BopWMx</span></span></div>
+      <div id="f06-nh" class="f06-disp f06-htext" style="position:absolute;left:40px;bottom:40px;font-size:72px">No human in the loop.</div></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  
+  <script>
+
+  const tl = gsap.timeline({ paused: true });
+  const R = (sel, t, extra) => tl.fromTo(sel, { opacity: 0, y: 26 }, Object.assign({ opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, extra || {}), t);
+  const W = (sel, t, d) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d || 0.45, ease: "power3.out" }, t);
+  const TYPE = (sel, t, d, steps) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d, ease: "steps(" + steps + ")" }, t);
+  // hard cuts: discrete sets only (a later fromTo would render its from-state early when seeking)
+  const CUT = (sel, t) => { tl.set(sel, { opacity: 0 }, 0); tl.set(sel, { opacity: 1 }, t); };
+  const OFF = (sel, t) => tl.set(sel, { opacity: 0 }, t);
+  tl.fromTo("#f06-fill", { scaleX: 0.4909 }, { scaleX: 0.6237, duration: 8.999, ease: "none" }, 0);
+  document.querySelectorAll("[data-p='f06'] .f06-holo, [data-p='f06'] .f06-htext").forEach((el) => {
+    tl.fromTo(el, { backgroundPosition: "0% 50%" }, { backgroundPosition: "100% 50%", duration: 8.999, ease: "none" }, 0);
+  });
+
+  R("#f06-r1", 2.7, { duration: 0.3 });
+  R("#f06-r2", 4.4, { duration: 0.3 });
+  R("#f06-r3", 5.3, { duration: 0.3 });
+  R("#f06-r4", 6.3, { duration: 0.3 });
+  R("#f06-nh", 7.3);
+
+  window.__timelines["06-demo-pay-sign-send"] = tl;
+  </script>
+</div>
+</template>

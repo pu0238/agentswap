@@ -1,0 +1,60 @@
+<template>
+<div id="root" data-composition-id="09-whats-next" data-width="1920" data-height="1080" data-duration="5.632">
+  <style>
+  @font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("assets/fonts/archivo-latin-wdth-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Geist Mono"; font-weight: 500; src: url("assets/fonts/geist-mono-500.woff2") format("woff2"); }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Archivo", sans-serif; color: #121212; }
+  .f09-bg { position: absolute; inset: 0; background: #DCD3C6; }
+  .f09-stage { position: absolute; inset: 0; }
+  .f09-disp { font-weight: 900; font-stretch: 125%; letter-spacing: -0.04em; line-height: 0.88; text-transform: uppercase; }
+  .f09-mono { font-family: "Geist Mono", monospace; text-transform: uppercase; }
+  .f09-muted { color: #6E685F; }
+  .f09-deep .f09-muted { color: #9A9287; }
+  .f09-frame { border: 3px solid #121212; }
+  .f09-deep { background: #121212; color: #DCD3C6; }
+  .f09-green { background: #14F195; color: #121212; }
+  .f09-holo { background-image: linear-gradient(115deg,#ff9bd2 0%,#c7a8ff 17%,#8fd3ff 33%,#8dffd6 50%,#f4ff9a 66%,#ffc58f 83%,#ff9bd2 100%); background-size: 300% 300%; background-position: 0% 50%; color: #012136; }
+  .f09-htext { background-image: linear-gradient(100deg,#ff9bd2,#c7a8ff,#8fd3ff,#8dffd6,#f4ff9a,#ffc58f,#ff9bd2); background-size: 250% 100%; background-position: 0% 50%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .f09-tag { position: absolute; left: 120px; top: 56px; font-family: "Geist Mono", monospace; font-size: 26px; text-transform: uppercase; border: 3px solid #121212; padding: 12px 18px; line-height: 1; }
+  .f09-count { position: absolute; right: 120px; top: 64px; font-family: "Geist Mono", monospace; font-size: 26px; color: #121212; }
+  .f09-bars { position: absolute; right: 250px; top: 58px; width: 150px; height: 34px; background: repeating-linear-gradient(90deg,#121212 0 2px,transparent 2px 4px,#121212 4px 5px,transparent 5px 9px,#121212 9px 13px,transparent 13px 14px,#121212 14px 15px,transparent 15px 19px,#121212 19px 20px,transparent 20px 23px); }
+  .f09-track { position: absolute; left: 120px; right: 120px; top: 876px; height: 10px; background: #121212; overflow: hidden; }
+  .f09-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: 0 50%; }
+  .f09-term { font-family: "Geist Mono", monospace; white-space: pre; }
+</style>
+  <div class="clip f09-bg" data-start="0" data-duration="5.632" data-track-index="0"></div>
+  <div class="clip f09-stage" data-p="f09" data-start="0" data-duration="5.632" data-track-index="1">
+    
+    <span class="f09-bars"></span><div class="f09-count">09 / 10</div>
+    <div class="f09-track"><div id="f09-fill" class="f09-fill f09-holo"></div></div>
+    
+    <div id="f09-cols" class="f09-frame" style="position:absolute;left:120px;right:120px;top:170px;height:640px;display:grid;grid-template-columns:1fr 1fr">
+      <div style="display:flex;flex-direction:column"><div class="f09-green f09-mono" style="font-size:30px;padding:18px 30px;border-bottom:3px solid currentColor">Now</div><div style="padding:40px 30px;display:flex;flex-direction:column;gap:22px"><span class="f09-disp f09-muted" style="font-size:72px">Jupiter-routed</span><span class="f09-mono f09-muted" style="font-size:28px;text-transform:none">what you just saw</span></div></div>
+      <div style="border-left:3px solid currentColor;display:flex;flex-direction:column"><div id="f09-nh" class="f09-holo f09-mono" style="font-size:30px;padding:18px 30px;border-bottom:3px solid currentColor">Next</div><div style="padding:40px 30px;display:flex;flex-direction:column;gap:22px"><span id="f09-p" class="f09-disp" style="font-size:88px">Own pools</span><span id="f09-f" class="f09-mono" style="font-size:30px;text-transform:none">built for agent flow</span></div></div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  
+  <script>
+
+  const tl = gsap.timeline({ paused: true });
+  const R = (sel, t, extra) => tl.fromTo(sel, { opacity: 0, y: 26 }, Object.assign({ opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, extra || {}), t);
+  const W = (sel, t, d) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d || 0.45, ease: "power3.out" }, t);
+  const TYPE = (sel, t, d, steps) => tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: d, ease: "steps(" + steps + ")" }, t);
+  // hard cuts: discrete sets only (a later fromTo would render its from-state early when seeking)
+  const CUT = (sel, t) => { tl.set(sel, { opacity: 0 }, 0); tl.set(sel, { opacity: 1 }, t); };
+  const OFF = (sel, t) => tl.set(sel, { opacity: 0 }, t);
+  tl.fromTo("#f09-fill", { scaleX: 0.8400 }, { scaleX: 0.9171, duration: 5.232, ease: "none" }, 0);
+  document.querySelectorAll("[data-p='f09'] .f09-holo, [data-p='f09'] .f09-htext").forEach((el) => {
+    tl.fromTo(el, { backgroundPosition: "0% 50%" }, { backgroundPosition: "100% 50%", duration: 5.232, ease: "none" }, 0);
+  });
+
+  W("#f09-cols", 0.0, 0.4);
+  W("#f09-nh", 0.3, 0.4);
+  R("#f09-p", 1.3);
+  R("#f09-f", 2.9);
+
+  window.__timelines["09-whats-next"] = tl;
+  </script>
+</div>
+</template>
