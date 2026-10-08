@@ -1,0 +1,62 @@
+{
+  "name": "@agentswap/client",
+  "version": "0.2.0",
+  "description": "Non-custodial AgentSwap SDK and MCP client for the hosted funding API",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js"
+    },
+    "./mcp/http": {
+      "types": "./dist/mcp-http.d.ts",
+      "import": "./dist/mcp-http.js"
+    }
+  },
+  "bin": {
+    "agentswap-mcp": "./dist/mcp-stdio.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx tests/client.test.ts && node --import tsx tests/sdk.test.ts",
+    "mcp": "node dist/mcp-stdio.js",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.1",
+    "@solana/kit": "^8.3.0",
+    "@x402/core": "2.27.0",
+    "@x402/evm": "2.27.0",
+    "@x402/fetch": "2.27.0",
+    "@x402/svm": "2.27.0",
+    "viem": "^2.57.4",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pu0238/agentswap.git"
+  },
+  "homepage": "https://agentswap.forge-3.workers.dev",
+  "bugs": {
+    "url": "https://github.com/pu0238/agentswap/issues"
+  }
+}
