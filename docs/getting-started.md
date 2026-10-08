@@ -1,5 +1,7 @@
 # Start using AgentSwap
 
+Current release: **v0.3.0**, published **2026-10-09**. Documentation updated **2026-10-09**. [GitHub release](https://github.com/pu0238/agentswap/releases/tag/v0.3.0) · [Release notes](https://agentswap.forge-3.workers.dev/releases/v0.3.0.md).
+
 Use the hosted service at **https://agentswap.forge-3.workers.dev**. There is no backend to deploy and no AgentSwap API key to obtain. The public repository is **https://github.com/pu0238/agentswap**; it contains the client and MCP, not the service implementation.
 
 ## Choose your path
@@ -130,7 +132,7 @@ MCP also exposes resource **`agentswap://getting-started`** and prompt **`first_
 Needed only for local stdio, the SDK and diagnostics: **Node.js 22+**, Git and pnpm 10. If pnpm is missing, install it with `npm install --global pnpm@10`.
 
 ```sh
-git clone https://github.com/pu0238/agentswap.git agentswap-client
+git clone --branch v0.3.0 https://github.com/pu0238/agentswap.git agentswap-client
 cd agentswap-client
 pnpm install --frozen-lockfile
 pnpm build
@@ -155,7 +157,24 @@ node dist/cli.js doctor --api https://agentswap.forge-3.workers.dev
 
 Stdio output contains MCP protocol messages only. If manually running `pnpm mcp` appears to wait silently, that is normal: an MCP client must send initialization messages.
 
-There is no published npm release implied by the package name. Do not assume `npx @agentswap/client` works. Clone/build now, or use `pnpm pack` and install the resulting tarball into your own Node project. The tarball includes SDK exports, MCP/CLI binaries, docs and examples.
+### Install the published release
+
+The GitHub release includes a prebuilt SDK/MCP package. No local TypeScript build is required when installing this package into an existing Node project:
+
+```sh
+curl --fail --location --remote-name https://github.com/pu0238/agentswap/releases/download/v0.3.0/agentswap-client-0.3.0.tgz
+curl --fail --location --remote-name https://github.com/pu0238/agentswap/releases/download/v0.3.0/SHA256SUMS-v0.3.0.txt
+sha256sum --check SHA256SUMS-v0.3.0.txt
+pnpm add ./agentswap-client-0.3.0.tgz
+pnpm exec agentswap doctor
+```
+
+Installed imports are `@agentswap/client` for the SDK and `@agentswap/client/intent-store` for the Node durable journal. Local stdio starts with `node /absolute/project/node_modules/@agentswap/client/dist/mcp-stdio.js`; configuration can be printed with `pnpm exec agentswap setup claude-desktop --path /absolute/project/node_modules/@agentswap/client/dist/mcp-stdio.js`. This is a local prebuilt binary, not a global npm install.
+
+For an existing source checkout, run `git fetch origin --tags`, `git checkout v0.3.0`, then `pnpm install --frozen-lockfile && pnpm build && pnpm run doctor`. Save local edits before switching. The example scripts below are run from a source checkout; the tarball can instead be imported by your own application.
+
+The package is not published to the npm registry. Do not assume `npx @agentswap/client` works. The tarball includes SDK exports, MCP/CLI binaries, docs and examples. [Release notes and compatibility limits](https://agentswap.forge-3.workers.dev/releases/v0.3.0.md).
+
 
 ## 3. Autonomous TypeScript/Node agents
 
@@ -187,6 +206,8 @@ Only `--execute` enables signing and payment. Inspect costs and use your own spe
 | `AGENT_EVM_PRIVATE_KEY` | Local `0x`-prefixed 32-byte EVM key; required for EVM payment options |
 | `AGENT_FROM` | Funding source token; default `USDC`; use `SOL`, `BONK` or a supported mint as appropriate |
 | `AGENT_PREFER_CHAIN` | Optional destination priority; does not create an unavailable route |
+| `AGENT_PAYMENT_INTENT_ID` | Stable ID per purchase; reuse it to reconcile/retry, including after a restart |
+| `AGENT_SLIPPAGE_BPS` | Maximum quoted funding slippage; default `50` (0.50%), range 1–1000 |
 | `SOLANA_RPC_URL` | Optional source RPC override |
 
 The source wallet needs the selected funding token and **SOL for Solana fees**. For supported EVM exact USDC payments, the facilitator pays destination gas; you need an EVM signer and the payment asset. Source gas, bridge costs and route minimums still apply.
@@ -195,10 +216,12 @@ Embed the SDK in any agent loop, queue worker or framework tool:
 
 ```ts
 import { createAgentSwap } from "./dist/index.js";
+import { fileIntentStore } from "./dist/file-intent-store.js";
 
 // Construct these locally using @solana/kit and viem/accounts.
-const agentswap = createAgentSwap({ solana: solanaSigner, evm: evmAccount, from: "USDC" });
-const response = await agentswap.fetch(sellerUrl);
+const agentswap = createAgentSwap({ solana: solanaSigner, evm: evmAccount, from: "USDC", slippageBps: 50, intentStore: fileIntentStore() });
+const { response, receipt } = await agentswap.fetchWithReceipt(sellerUrl, undefined, { paymentIntentId: "order-42" });
+console.log(receipt);
 ```
 
 The runnable `examples/pay.mjs` shows actual signer construction. Request bodies must be strings or absent so x402 requests can be retried. A normal non-402 response is returned directly. On a 402 the SDK checks accepted-token balances, funds if needed, waits for status and destination balance, then pays with the selected network signer.
@@ -299,6 +322,8 @@ For the runnable example, set `AGENT_PAYMENT_INTENT_ID=order-42` and `AGENT_SLIP
 | `/api/info` missing or doctor fails | Check the API URL, deployment version, proxy/firewall and client logs |
 
 ## Compatibility and verification
+
+Release v0.3.0 was verified on 2026-10-09: typecheck, 31 tests, installed release tarball exports/CLI and production API/MCP version checks passed. Installation emits peer-version warnings because token helpers used by `@x402/svm@2.27.0` declare Solana Kit 5 peers while this client uses Kit 8.3.0. Full seller-payment mainnet E2E remains unverified.
 
 Configuration formats were checked against official docs on 2026-10-08. The AgentSwap MCP protocol, CLI generation and examples are tested independently; this does not claim that every editor UI, paid connector plan, model-provider run or mainnet payment path was exercised.
 

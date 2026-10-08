@@ -29,7 +29,7 @@ MCP exposes `list_tokens`, `list_chains`, `get_quote`, `fund_x402_payment`, `bri
 Node.js 22+, Git and pnpm 10:
 
 ```sh
-git clone https://github.com/pu0238/agentswap.git agentswap-client
+git clone --branch v0.3.0 https://github.com/pu0238/agentswap.git agentswap-client
 cd agentswap-client
 pnpm install --frozen-lockfile
 pnpm build
@@ -65,9 +65,11 @@ In your code:
 
 ```ts
 import { createAgentSwap } from "./dist/index.js";
+import { fileIntentStore } from "./dist/file-intent-store.js";
 
-const agentswap = createAgentSwap({ solana, evm, from: "USDC" });
-const response = await agentswap.fetch(sellerUrl);
+const agentswap = createAgentSwap({ solana, evm, from: "USDC", slippageBps: 50, intentStore: fileIntentStore() });
+const { response, receipt } = await agentswap.fetchWithReceipt(sellerUrl, undefined, { paymentIntentId: "order-42" });
+console.log(receipt); // selected chain, bridge route, maximum slippage and retry reuse
 ```
 
 The SDK checks accepted-token balances, requests funding if necessary, signs locally, polls completion and pays via x402. Request bodies must be strings or absent so retries work. Reconcile a timed-out funding signature before retrying. Use your application's spending policy for autonomous execution.
@@ -76,7 +78,7 @@ The SDK checks accepted-token balances, requests funding if necessary, signs loc
 
 For auditable payments, use `fetchWithReceipt(url, init, { paymentIntentId })`. Receipts show the selected network, bridge route, `maxSlippageBps` and whether retries reuse the intent, funding and authorization. Selection is pinned; retries never silently switch chains or generate another authorization. Configure `slippageBps` (default 50) and a durable `intentStore` to survive restarts; the Node adapter is exported at `@agentswap/client/intent-store`. See [payment intents and safe retries](docs/getting-started.md#payment-intents-receipts-and-safe-retries), including seller-side idempotency limits.
 
-No npm release is implied by `@agentswap/client`; use this checkout or `pnpm pack` and install the local tarball. Do not assume an `npx` install is available. Exports include SDK/API types, MCP adapters and command-line setup/doctor utilities. The backend, provider implementation and deployment are not included. MIT applies to this public client repository.
+Download the prebuilt [v0.3.0 package](https://github.com/pu0238/agentswap/releases/download/v0.3.0/agentswap-client-0.3.0.tgz) and [SHA-256 checksum](https://github.com/pu0238/agentswap/releases/download/v0.3.0/SHA256SUMS-v0.3.0.txt), or build the tagged checkout. The package is not published to the npm registry; do not assume an `npx` install is available. Exports include SDK/API types, MCP adapters and command-line setup/doctor utilities. The backend, provider implementation and deployment are not included. MIT applies to this public client repository. [Install or upgrade instructions](docs/getting-started.md#install-the-published-release).
 
 Source: Solana. Destinations: Solana, Base, Arbitrum, Polygon, Avalanche, Sei and XLayer. SKALE is excluded; route availability varies. `/api/swap` retains its $0.01 x402 fee. Bridge/funding have no x402 paywall; provider and network costs remain.
 
