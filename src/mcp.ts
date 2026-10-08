@@ -51,12 +51,13 @@ export function createAgentSwapMcpServer(options: ApiOptions = {}) {
     description: "List supported destination chains, CAIP-2 networks, USDC addresses and explorers. Source is always Solana.", annotations: readOnly,
   }, async () => json(await api.chains()));
   server.registerTool("fund_x402_payment", {
-    description: "Fund an x402 payment using Solana tokens. Pass the seller's 402 challenge. Returns an unsigned Solana transaction and next steps, or pay_directly. Sign locally; no x402 paywall for funding. Provider and network costs apply.",
+    description: "Plan x402 funding using Solana tokens. Returns unsigned transaction, route/slippage receipt and retry policy, or pay_directly. Never executes or deduplicates: preserve the original signature and reconcile before retrying. paymentIntentId is correlation only. Sign locally; provider/network costs apply.",
     annotations: { ...readOnly, idempotentHint: false },
     inputSchema: {
       paymentRequired: z.union([z.string(), z.object({ accepts: z.array(z.record(z.string(), z.unknown())) }).passthrough(), z.array(z.record(z.string(), z.unknown()))]),
       from: z.string(), userPublicKey: z.string(), evmAddress: z.string().optional(), preferChain: z.string().optional(),
       slippageBps: z.number().int().min(1).max(1000).optional(),
+      paymentIntentId: z.string().regex(/^[a-zA-Z0-9_-]{1,128}$/).optional(),
     },
   }, async (args) => json(await api.fund(args)));
   server.registerTool("bridge_status", {

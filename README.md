@@ -72,6 +72,8 @@ The SDK checks accepted-token balances, requests funding if necessary, signs loc
 
 ## Distribution and scope
 
+For auditable payments, use `fetchWithReceipt(url, init, { paymentIntentId })`. Receipts show the selected network, bridge route, `maxSlippageBps` and whether retries reuse the intent, funding and authorization. Selection is pinned; retries never silently switch chains or generate another authorization. Configure `slippageBps` (default 50) and a durable `intentStore` to survive restarts; the Node adapter is exported at `@agentswap/client/intent-store`. See [payment intents and safe retries](docs/getting-started.md#payment-intents-receipts-and-safe-retries), including seller-side idempotency limits.
+
 No npm release is implied by `@agentswap/client`; use this checkout or `pnpm pack` and install the local tarball. Do not assume an `npx` install is available. Exports include SDK/API types, MCP adapters and command-line setup/doctor utilities. The backend, provider implementation and deployment are not included. MIT applies to this public client repository.
 
 Source: Solana. Destinations: Solana, Base, Arbitrum, Polygon, Avalanche, Sei and XLayer. SKALE is excluded; route availability varies. `/api/swap` retains its $0.01 x402 fee. Bridge/funding have no x402 paywall; provider and network costs remain.

@@ -4,6 +4,7 @@ import { generateKeyPairSigner, blockhash, compileTransaction, createTransaction
 import { privateKeyToAccount } from "viem/accounts";
 import { createAgentSwap } from "../src/agentswap.js";
 import { resolveChain } from "../src/chains.js";
+import { AgentSwapPaymentError, memoryIntentStore } from "../src/intents.js";
 
 const evmAddress = "0x000000000000000000000000000000000000dEaD";
 const req = { scheme: "exact", network: "eip155:8453", amount: "10000", asset: resolveChain("base").usdc, payTo: evmAddress };
@@ -79,7 +80,8 @@ test("SDK empty destination balance signs funding, waits for DONE, then pays; FA
       assert.equal(body.from, "BONK");
       assert.equal(body.evmAddress, evm.address);
       assert.equal(body.preferChain, "base");
-      return json({ action: "fund_then_pay", network: req.network, asset: req.asset, payTo: req.payTo, transaction });
+      return json({ action: "fund_then_pay", network: req.network, asset: req.asset, payTo: req.payTo, transaction,
+        quote: { route: ["bridge-tool"], slippageBps: 50, inAmount: "1", minOutAmount: "0.01" } });
     }
     if (url.includes("/api/status?tx=")) {
       steps.push("status"); complete = !failed;
@@ -96,4 +98,141 @@ test("SDK empty destination balance signs funding, waits for DONE, then pays; FA
   complete = false; failed = true; steps.length = 0;
   await assert.rejects(() => sdk.fetch("https://seller.test/paid"), /failed: REFUNDED/);
   assert.deepEqual(steps, ["balance", "fund", "send", "status"]);
+});
+
+test("retry pins the original requirement and reuses its authorization across SDK instances", async (t) => {
+  const solana = await generateKeyPairSigner();
+  const evm = privateKeyToAccount(`0x${"01".repeat(32)}`);
+  const journal = memoryIntentStore();
+  let balanceCalls = 0; let sellerCalls = 0;
+  const authorizations: string[] = [];
+  const cheaper = { ...req, maxTimeoutSeconds: 300, extra: { name: "USD Coin", version: "2" } };
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request, init?: RequestInit) => {
+    const url = input instanceof Request ? input.url : String(input);
+    if (url.includes("rpc.test")) {
+      balanceCalls++; const call = JSON.parse(init!.body as string);
+      return json({ jsonrpc: "2.0", id: call.id, result: `0x${(15000n).toString(16).padStart(64, "0")}` });
+    }
+    assert.equal(url, "https://seller.test/paid");
+    sellerCalls++;
+    const header = new Headers(init?.headers).get("PAYMENT-SIGNATURE");
+    if (!header) return new Response(null, { status: 402, headers: { "PAYMENT-REQUIRED": btoa(JSON.stringify({ x402Version: 2, resource: { url }, accepts: [{ ...cheaper, amount: "20000" }, cheaper] })) } });
+    const payload = JSON.parse(atob(header));
+    assert.equal(payload.accepted.amount, "10000", "pin the selected option even when the same chain offers several prices");
+    authorizations.push(header);
+    const saved = await journal.get("order-42");
+    assert.equal(saved!.paymentHeaders!["PAYMENT-SIGNATURE"], header, "journal authorization before sending it to the seller");
+    if (authorizations.length === 1) throw new Error("Connection lost after seller may have settled");
+    return new Response("paid", { headers: { "PAYMENT-RESPONSE": btoa(JSON.stringify({ success: true, transaction: "0xsettled", network: req.network, payer: evm.address })) } });
+  });
+  const options = { solana, evm, intentStore: journal, evmRpc: { base: "https://rpc.test" } };
+  const first = createAgentSwap(options);
+  await assert.rejects(() => first.fetchWithReceipt("https://seller.test/paid", undefined, { paymentIntentId: "order-42" }), (error: unknown) => {
+    assert.ok(error instanceof AgentSwapPaymentError);
+    assert.equal(error.receipt.intentId, "order-42");
+    assert.equal(error.receipt.outcome, "payment_unknown");
+    assert.equal(error.receipt.selection.requirement.amount, "10000");
+    return true;
+  });
+  const retry = createAgentSwap(options);
+  const result = await retry.fetchWithReceipt("https://seller.test/paid", undefined, { paymentIntentId: "order-42" });
+  assert.equal(result.response.status, 200);
+  assert.equal(result.receipt!.outcome, "confirmed");
+  assert.deepEqual(result.receipt!.retry, { reusesPaymentIntent: true, reusesAuthorization: true, reusesFunding: false, automaticChainFallback: false });
+  assert.equal(authorizations[0], authorizations[1]);
+  assert.equal(balanceCalls, 2, "one initial selection probes the two prices; retry does not reselect or query balances");
+  assert.equal(sellerCalls, 3, "retry directly reuses the saved authorization, without another unpaid request");
+  await assert.rejects(() => retry.fetch("https://seller.test/other", undefined, { paymentIntentId: "order-42" }), /different request/);
+  await assert.rejects(() => retry.fetch("https://seller.test/paid", undefined, { paymentIntentId: "order-42" }), /confirmed/);
+  assert.equal(sellerCalls, 3);
+});
+
+test("an ambiguous bridge is reconciled by its original signature without a new funding transaction", async (t) => {
+  const solana = await generateKeyPairSigner();
+  const evm = privateKeyToAccount(`0x${"01".repeat(32)}`);
+  const message = setTransactionMessageLifetimeUsingBlockhash({ blockhash: blockhash("11111111111111111111111111111111"), lastValidBlockHeight: 1n }, setTransactionMessageFeePayer(solana.address, createTransactionMessage({ version: 0 })));
+  const transaction = getBase64EncodedWireTransaction(compileTransaction(message));
+  const journal = memoryIntentStore();
+  let funds = 0; let sends = 0; let statuses = 0; let completed = false;
+  let signature: string | undefined;
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request, init?: RequestInit) => {
+    const url = input instanceof Request ? input.url : String(input);
+    if (url.includes("rpc.test")) {
+      const call = JSON.parse(init!.body as string);
+      if (call.method === "sendTransaction") {
+        sends++;
+        const saved = await journal.get("bridge-order");
+        assert.ok(saved!.receipt.funding.signature, "persist signature before broadcast");
+        assert.equal(saved!.receipt.outcome, "funding_unknown");
+        return json({ jsonrpc: "2.0", id: call.id, result: "1".repeat(88) });
+      }
+      return json({ jsonrpc: "2.0", id: call.id, result: `0x${(completed ? 20000n : 0n).toString(16).padStart(64, "0")}` });
+    }
+    if (url.endsWith("/api/fund")) {
+      funds++; const body = JSON.parse(init!.body as string);
+      assert.equal(body.slippageBps, 75); assert.equal(body.paymentIntentId, "bridge-order");
+      assert.deepEqual(body.paymentRequired.accepts, [{ ...req, extra: { name: "USD Coin", version: "2" } }]);
+      return json({ action: "fund_then_pay", network: req.network, asset: req.asset, payTo: req.payTo, transaction,
+        quote: { route: ["swap", "bridge"], slippageBps: 75, inAmount: "0.001", minOutAmount: "0.01", feeUsd: "0.02", gasUsd: "0.01" } });
+    }
+    if (url.includes("/api/status?tx=")) {
+      statuses++; const hash = new URL(url).searchParams.get("tx")!;
+      if (signature) assert.equal(hash, signature); signature = hash;
+      if (statuses === 1) throw new Error("Temporary status outage");
+      completed = true; return json({ status: "DONE" });
+    }
+    const headers = new Headers(init?.headers);
+    if (headers.has("PAYMENT-SIGNATURE")) return new Response("paid");
+    return new Response(null, { status: 402, headers: { "PAYMENT-REQUIRED": btoa(JSON.stringify({ x402Version: 2, resource: { url }, accepts: [{ ...req, maxTimeoutSeconds: 300, extra: { name: "USD Coin", version: "2" } }] })) } });
+  });
+  const sdk = createAgentSwap({ api: "https://api.test", solana, evm, from: "SOL", slippageBps: 75, intentStore: journal, solanaRpc: "https://solana.rpc.test", evmRpc: { base: "https://evm.rpc.test" } });
+  await assert.rejects(() => sdk.fetch("https://seller.test/paid", undefined, { paymentIntentId: "bridge-order" }), AgentSwapPaymentError);
+  const result = await sdk.fetchWithReceipt("https://seller.test/paid", undefined, { paymentIntentId: "bridge-order" });
+  assert.equal(funds, 1); assert.equal(sends, 1); assert.equal(statuses, 2);
+  assert.deepEqual(result.receipt!.funding.route, ["swap", "bridge"]);
+  assert.equal(result.receipt!.funding.maxSlippageBps, 75);
+  assert.equal(result.receipt!.retry.reusesFunding, true);
+  assert.equal(result.receipt!.selection.network, "eip155:8453");
+});
+
+test("funding cannot silently change the selected chain or maximum slippage", async (t) => {
+  const solana = await generateKeyPairSigner();
+  const evm = privateKeyToAccount(`0x${"01".repeat(32)}`);
+  let tamper: 'chain' | 'slippage' = 'chain';
+  t.mock.method(globalThis, 'fetch', async (input: string | URL | Request, init?: RequestInit) => {
+    const url = input instanceof Request ? input.url : String(input);
+    if (url.includes('rpc.test')) {
+      const call = JSON.parse(init!.body as string);
+      assert.equal(call.method, 'eth_call', 'never broadcast a funding plan that changed constraints');
+      return json({jsonrpc:'2.0',id:call.id,result:`0x${'0'.repeat(64)}`});
+    }
+    if (url.endsWith('/api/fund')) return json({action:'fund_then_pay',network:tamper==='chain'?'eip155:42161':req.network,asset:req.asset,payTo:req.payTo,transaction:'must-not-sign',quote:{route:['bridge'],slippageBps:tamper==='slippage'?100:50}});
+    return new Response(null,{status:402,headers:{'PAYMENT-REQUIRED':btoa(JSON.stringify({x402Version:2,resource:{url},accepts:[{...req,maxTimeoutSeconds:300,extra:{name:'USD Coin',version:'2'}}]}))}});
+  });
+  const sdk=createAgentSwap({api:'https://api.test',solana,evm,evmRpc:{base:'https://rpc.test'}});
+  await assert.rejects(()=>sdk.fetch('https://seller.test/paid'),/pinned seller requirement/);
+  tamper='slippage';
+  await assert.rejects(()=>sdk.fetch('https://seller.test/paid'),/maximum slippage/);
+});
+
+test('SDK still signs v1 EVM challenges while pinning their normalized network', async (t) => {
+  const solana=await generateKeyPairSigner();
+  const evm=privateKeyToAccount(`0x${'01'.repeat(32)}`);
+  t.mock.method(globalThis,'fetch',async (input: string | URL | Request,init?:RequestInit)=>{
+    const url=input instanceof Request?input.url:String(input);
+    if(url.includes('rpc.test')) {
+      const call=JSON.parse(init!.body as string);
+      return json({jsonrpc:'2.0',id:call.id,result:`0x${(20000n).toString(16).padStart(64,'0')}`});
+    }
+    const header=new Headers(init?.headers).get('X-PAYMENT');
+    if(header) {
+      const payload=JSON.parse(atob(header));
+      assert.equal(payload.network,'base');assert.equal(payload.x402Version,1);
+      return new Response('paid');
+    }
+    return json({x402Version:1,accepts:[{scheme:'exact',network:'base',maxAmountRequired:'10000',asset:req.asset,payTo:req.payTo,maxTimeoutSeconds:300,resource:url,description:'fixture',mimeType:'application/json',extra:{name:'USD Coin',version:'2'}}]},402);
+  });
+  const sdk=createAgentSwap({solana,evm,evmRpc:{base:'https://rpc.test'}});
+  const result=await sdk.fetchWithReceipt('https://seller.test/paid');
+  assert.equal(result.response.status,200);assert.equal(result.receipt!.selection.network,'eip155:8453');
 });

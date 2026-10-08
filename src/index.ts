@@ -3,3 +3,5 @@ export { createApiClient, AgentSwapApiError, DEFAULT_API, type ApiOptions } from
 export { parseChallenge, pickRequirement, payableRequirements, type Requirement } from "./payment.js";
 export { CHAINS, resolveChain } from "./chains.js";
 export type * from "./types.js";
+export { AgentSwapPaymentError } from "./intents.js";
+export type { PaymentReceipt, PaymentIntentState, PaymentIntentStore, PaymentFetchOptions } from "./intents.js";

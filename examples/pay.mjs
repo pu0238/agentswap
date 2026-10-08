@@ -1,6 +1,7 @@
 import { createKeyPairSignerFromBytes, getBase58Encoder } from '@solana/kit';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createAgentSwap, parseChallenge } from '../dist/index.js';
+import { fileIntentStore } from '../dist/file-intent-store.js';
 
 const args=process.argv.slice(2);
 const execute=args.includes('--execute');
@@ -25,8 +26,11 @@ if(!execute) {
   const solana=await createKeyPairSignerFromBytes(new Uint8Array(decoded));
   const evmKey=process.env.AGENT_EVM_PRIVATE_KEY;
   if(evmKey && !/^0x[0-9a-fA-F]{64}$/.test(evmKey)) throw new Error('AGENT_EVM_PRIVATE_KEY must be 0x-prefixed, 32-byte hex');
-  const agentswap=createAgentSwap({api:process.env.AGENTSWAP_API,solana,evm:evmKey?privateKeyToAccount(evmKey):undefined,from:process.env.AGENT_FROM??'USDC',preferChain:process.env.AGENT_PREFER_CHAIN,solanaRpc:process.env.SOLANA_RPC_URL,log:(step,data)=>console.log(step,data??'')});
-  const res=await agentswap.fetch(url);
+  const agentswap=createAgentSwap({api:process.env.AGENTSWAP_API,solana,evm:evmKey?privateKeyToAccount(evmKey):undefined,from:process.env.AGENT_FROM??'USDC',preferChain:process.env.AGENT_PREFER_CHAIN,solanaRpc:process.env.SOLANA_RPC_URL,slippageBps:Number(process.env.AGENT_SLIPPAGE_BPS??50),intentStore:fileIntentStore(),log:(step,data)=>console.log(step,data??'')});
+  const paymentIntentId=process.env.AGENT_PAYMENT_INTENT_ID??crypto.randomUUID();
+  console.log('Payment intent:',paymentIntentId,'— reuse this ID to reconcile/retry, not a new ID.');
+  const {response:res,receipt}=await agentswap.fetchWithReceipt(url,undefined,{paymentIntentId});
+  console.log('Receipt:',JSON.stringify(receipt,null,2));
   console.log(`HTTP ${res.status}\n${await res.text()}`);
   if(!res.ok) process.exitCode=1;
 }

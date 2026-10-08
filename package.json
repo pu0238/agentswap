@@ -15,6 +15,10 @@
     "LICENSE"
   ],
   "exports": {
+    "./intent-store": {
+      "types": "./dist/file-intent-store.d.ts",
+      "import": "./dist/file-intent-store.js"
+    },
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
@@ -35,7 +39,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "tsc -p tsconfig.json && node --import tsx tests/client.test.ts && node --import tsx tests/sdk.test.ts && node --import tsx tests/onboarding.test.ts",
+    "test": "tsc -p tsconfig.json && node --import tsx tests/client.test.ts && node --import tsx tests/sdk.test.ts && node --import tsx tests/onboarding.test.ts && node tests/intent-store.test.mjs",
     "mcp": "node dist/mcp-stdio.js",
     "prepack": "npm run build",
     "doctor": "node dist/cli.js doctor",

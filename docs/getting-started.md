@@ -238,6 +238,50 @@ Detailed request/response flow: [service skill](https://agentswap.forge-3.worker
 
 Existing `/api/swap` costs $0.01 via x402. `/api/bridge` and `/api/fund` have no x402 paywall; provider/network fees apply. See current `swap_info`, quote `feeUsd` and `gasUsd`. The verified mainnet proof is a Solana → Base → Solana round trip; full seller-payment E2E remains unverified.
 
+## Payment intents, receipts and safe retries
+
+Chain choice happens once per payment intent. The SDK records the chosen network, asset, atomic amount and seller address. It selects an already-funded seller option when possible; otherwise it uses the configured preference and chain priority. `preferChain` is a preference, not a requirement. After selection, neither funding nor a retry can fall back to another chain or seller option. Multiple prices on the same chain are pinned individually.
+
+Use `fetchWithReceipt` when your application needs an audit record. `fetch` still returns an ordinary Response; failures after selection throw `AgentSwapPaymentError` with `.receipt`. `getReceipt(intentId)` reads the latest record. Ordinary responses that never require payment have no payment receipt.
+
+```ts
+import { createAgentSwap, AgentSwapPaymentError } from "./dist/index.js";
+import { fileIntentStore } from "./dist/file-intent-store.js"; // Node only
+
+const agent = createAgentSwap({
+  solana, evm, from: "SOL", slippageBps: 50, // 50 bps = 0.50%
+  intentStore: fileIntentStore(),
+});
+const paymentIntentId = "order-42"; // unique per purchase; persist with your order
+const init = { headers: { "Idempotency-Key": paymentIntentId } }; // seller must support this separately
+try {
+  const { response, receipt } = await agent.fetchWithReceipt(sellerUrl, init, { paymentIntentId });
+  console.log(receipt); // route, maxSlippageBps, original signature, retry flags, settlement outcome
+} catch (error) {
+  if (error instanceof AgentSwapPaymentError) console.log(error.receipt);
+  throw error; // inspect/reconcile; do not automatically create a new order ID
+}
+// If a retry is appropriate, invoke the SAME URL/init/paymentIntentId.
+// The SDK reconciles the saved funding signature and replays the SAME signed authorization.
+```
+
+The receipt contains:
+
+- `intentId`, `attempts`, `selection.network`, `selection.chain`, `selection.reason`, and the exact seller requirement.
+- `funding.sourceToken`, `funding.route`, `funding.maxSlippageBps`, quoted input/minimum output and estimated fees/gas, plus the original funding signature/status when applicable. Route is empty when an existing balance pays directly. Slippage limits quote execution; it does not cap all fees or guarantee a final total cost.
+- `retry.reusesPaymentIntent`, `retry.reusesFunding`, `retry.reusesAuthorization`, and `automaticChainFallback: false`. These distinguish the first attempt from an actual retry.
+- `seller.httpStatus`, decoded settlement data when supplied, and `outcome`. An HTTP 200 without a successful settlement receipt remains `payment_unknown`; it is not proof of settlement.
+
+A funding signature is journaled **before broadcast**. On an ambiguous send or status failure, the next attempt polls that original signature and never submits a replacement bridge. A signed x402 authorization is journaled before the paid request and reused verbatim on retry; no fresh nonce or automatic authorization recovery is generated. An expired, rejected or already-used authorization needs reconciliation, not an automatic new signature. Failed funding and confirmed payment intents cannot be executed again. Changing the request URL, method, body, headers or payer under the same intent ID is rejected.
+
+Without `paymentIntentId`, each fetch creates a new intent. Without `intentStore`, records last only for that SDK instance. To survive restarts, use the Node file store (also exported as `@agentswap/client/intent-store` for installed packages) or implement `PaymentIntentStore` with durable storage and per-intent `acquire` locking. The file store writes atomically, flushes before broadcasting, uses private file permissions and locks intents across processes. If a process dies while locked, confirm it is stopped and reconcile the saved receipt before removing the stale `.lock` file. Keep `.agentswap-payment-intents/` private: it contains signed payment authorizations, which must never be logged, committed or sent to MCP. Share the receipt, not the journal.
+
+SDK intent reuse prevents creating another funding transaction or authorization for that intent. It **does not guarantee seller-side request idempotency or delivery exactly once**. Sellers should support an application-level idempotency key and return settlement receipts. Never blindly repeat a side-effecting seller request after an ambiguous outcome.
+
+HTTP `/api/fund` and MCP `fund_x402_payment` return `receipt` for `fund_then_pay`, including route, max slippage and retry instructions. Their optional `paymentIntentId` is **correlation only**: the backend is stateless, does not deduplicate requests and returns a fresh unsigned quote on each call. The local SDK journal provides retry protection. Standalone HTTP/MCP clients must preserve signatures/authorizations and reconcile themselves.
+
+For the runnable example, set `AGENT_PAYMENT_INTENT_ID=order-42` and `AGENT_SLIPPAGE_BPS=50`. Execution uses the durable file store. Reuse the same ID for a retry; select a new ID only for a genuinely new purchase.
+
 ## Troubleshooting
 
 | Symptom | What to check |

@@ -3,3 +3,4 @@ dist/
 *.tgz
 .env
 *.keypair.json
+.agentswap-payment-intents/

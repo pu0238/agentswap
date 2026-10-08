@@ -17,7 +17,7 @@ export type BridgeQuote = {
   kind: "bridge" | "swap"; fromChain: string; toChain: string; from: string; to: string;
   inAmount: string; outAmount: string; minOutAmount: string; sourceTokenPriceUsd?: string;
   sourceGasCosts?: { amountUSD?: string; amount?: string; token?: { chainId: number; priceUSD?: string } }[];
-  feeUsd: string; gasUsd: string; etaSeconds: number; route: string[]; transaction?: string;
+  feeUsd: string; gasUsd: string; etaSeconds: number; route: string[]; transaction?: string; slippageBps?: number;
 };
 export type Quote = SwapQuote | BridgeQuote;
 export type Status = {
@@ -26,9 +26,15 @@ export type Status = {
 };
 export type FundingParams = {
   paymentRequired: string | object; from: string; userPublicKey: string;
-  evmAddress?: string; preferChain?: string; slippageBps?: number;
+  evmAddress?: string; preferChain?: string; slippageBps?: number; paymentIntentId?: string;
 };
 export type FundingPlan =
-  | { action: "pay_directly"; network: string; asset: string; amount: string }
+  | { action: "pay_directly"; network: string; asset: string; amount: string; receipt?: FundingReceipt }
   | { action: "fund_then_pay"; network: string; chain: string; asset: string; required: string;
-      payTo: string; quote: BridgeQuote; transaction: string; next: string };
+      payTo: string; quote: BridgeQuote; transaction: string; next: string; receipt?: FundingReceipt };
+
+export type FundingReceipt = {
+  intentId: string; network: string; asset: string; amountAtomic: string; payTo: string;
+  sourceToken: string; route: string[]; maxSlippageBps: number;
+  retry: { serverDeduplicates: false; automaticChainFallback: false; instruction: string };
+};
