@@ -1,5 +1,7 @@
 # AgentSwap — SDK and MCP for agent payments
 
+Latest release: [v0.3.0 — auditable payment intents](https://github.com/pu0238/agentswap/releases/tag/v0.3.0). [Release notes and upgrade instructions](docs/releases/v0.3.0.md).
+
 Give coding assistants quotes and unsigned funding plans, or let your own Node agent sign and pay locally. AgentSwap supports Solana swaps and funding x402 payments on supported EVM destinations. Private keys stay with your agent.
 
 ## Connect your coding assistant

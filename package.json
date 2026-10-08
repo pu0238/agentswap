@@ -1,6 +1,6 @@
 {
   "name": "@agentswap/client",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Non-custodial AgentSwap SDK and MCP client for the hosted funding API",
   "type": "module",
   "license": "MIT",
