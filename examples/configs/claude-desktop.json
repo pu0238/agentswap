@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "agentswap": {
+      "command": "node",
+      "args": [
+        "/absolute/path/agentswap-client/dist/mcp-stdio.js"
+      ],
+      "env": {
+        "AGENTSWAP_API": "https://agentswap.forge-3.workers.dev"
+      }
+    }
+  }
+}

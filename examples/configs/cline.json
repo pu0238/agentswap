@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "agentswap": {
+      "type": "streamableHttp",
+      "url": "https://agentswap.forge-3.workers.dev/mcp",
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

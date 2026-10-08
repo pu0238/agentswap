@@ -9,6 +9,8 @@
   },
   "files": [
     "dist",
+    "docs",
+    "examples",
     "README.md",
     "LICENSE"
   ],
@@ -27,14 +29,19 @@
     }
   },
   "bin": {
-    "agentswap-mcp": "./dist/mcp-stdio.js"
+    "agentswap-mcp": "./dist/mcp-stdio.js",
+    "agentswap": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx tests/client.test.ts && node --import tsx tests/sdk.test.ts",
+    "test": "tsc -p tsconfig.json && node --import tsx tests/client.test.ts && node --import tsx tests/sdk.test.ts && node --import tsx tests/onboarding.test.ts",
     "mcp": "node dist/mcp-stdio.js",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "doctor": "node dist/cli.js doctor",
+    "example:quote": "node examples/quote.mjs",
+    "example:pay": "node --env-file-if-exists=.env examples/pay.mjs",
+    "configure": "node dist/cli.js setup"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.1",

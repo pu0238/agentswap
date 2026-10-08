@@ -1,0 +1,1 @@
+claude mcp add --transport http --scope user agentswap 'https://agentswap.forge-3.workers.dev/mcp'
